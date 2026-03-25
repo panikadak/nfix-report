@@ -1,0 +1,3371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NostalgiaForInfinity X7 - Performance Report</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg-primary: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-card-hover: #1a1a25;
+    --bg-table-row: #0f0f17;
+    --bg-table-alt: #14141e;
+    --border: #1e1e2e;
+    --text-primary: #e0e0e0;
+    --text-secondary: #8a8a9a;
+    --text-muted: #5a5a6a;
+    --green: #00e676;
+    --green-dim: #00c853;
+    --green-bg: rgba(0,230,118,0.08);
+    --red: #ff1744;
+    --red-dim: #d50000;
+    --red-bg: rgba(255,23,68,0.08);
+    --accent: #7c4dff;
+    --accent-dim: #651fff;
+    --gold: #ffd740;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d18 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 0 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 50% 0%, rgba(124,77,255,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 20px;
+    background: rgba(124,77,255,0.12);
+    border: 1px solid rgba(124,77,255,0.3);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #e0e0e0, #7c4dff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-subtitle {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+  .hero-balance {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+  .hero-balance-item {
+    text-align: center;
+  }
+  .hero-balance-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .hero-balance-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .hero-balance-value.green {
+    color: var(--green);
+    text-shadow: 0 0 40px rgba(0,230,118,0.3);
+  }
+  .hero-arrow {
+    font-size: 28px;
+    color: var(--text-muted);
+  }
+  .hero-return {
+    margin-top: 12px;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--green);
+  }
+
+  /* ---- SECTION ---- */
+  .section {
+    padding: 48px 0;
+  }
+  .section-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-primary);
+  }
+  .section-title span {
+    color: var(--accent);
+  }
+
+  /* ---- KPI CARDS ---- */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+  .kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .kpi-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+  }
+  .kpi-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .kpi-value.green { color: var(--green); }
+  .kpi-value.red { color: var(--red); }
+  .kpi-value.gold { color: var(--gold); }
+
+  /* ---- CHARTS ---- */
+  .chart-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .chart-container canvas {
+    width: 100% !important;
+  }
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 768px) {
+    .charts-row { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 28px; }
+    .hero-balance-value { font-size: 24px; }
+    .kpi-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  }
+
+  /* ---- TABLES ---- */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    background: #16161f;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 14px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  thead th:hover {
+    color: var(--accent);
+  }
+  thead th::after {
+    content: ' \2195';
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+  tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(30,30,46,0.5);
+    white-space: nowrap;
+  }
+  tbody tr {
+    transition: background 0.15s;
+  }
+  tbody tr:hover {
+    background: var(--bg-card-hover) !important;
+  }
+  tbody tr.win {
+    background: rgba(0,230,118,0.03);
+  }
+  tbody tr.loss {
+    background: rgba(255,23,68,0.03);
+  }
+  .pnl-pos { color: var(--green); font-weight: 600; }
+  .pnl-neg { color: var(--red); font-weight: 600; }
+
+  .trade-log-wrap {
+    max-height: 600px;
+    overflow-y: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+  }
+  .trade-log-wrap::-webkit-scrollbar {
+    width: 6px;
+  }
+  .trade-log-wrap::-webkit-scrollbar-track {
+    background: var(--bg-card);
+  }
+  .trade-log-wrap::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+
+  /* ---- RISK METRICS ---- */
+  .risk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .risk-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .risk-card-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .risk-card-value {
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .risk-card-detail {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* ---- FOOTER ---- */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .tag-long {
+    background: rgba(0,230,118,0.12);
+    color: var(--green);
+  }
+  .tag-short {
+    background: rgba(255,23,68,0.12);
+    color: var(--red);
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- HERO HEADER -->
+<!-- ============================================================ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">Binance Futures -- Backtest Report</div>
+    <h1>NostalgiaForInfinity X7</h1>
+    <p class="hero-subtitle">January 2025 -- March 2026 &middot; 149 Trades &middot; 3x Leverage &middot; 19 Pairs</p>
+    <div class="hero-balance">
+      <div class="hero-balance-item">
+        <div class="hero-balance-label">Starting Balance</div>
+        <div class="hero-balance-value">$10,000.00</div>
+      </div>
+      <div class="hero-arrow">&#10140;</div>
+      <div class="hero-balance-item">
+        <div class="hero-balance-label">Final Balance</div>
+        <div class="hero-balance-value green">$28,155.02</div>
+      </div>
+    </div>
+    <div class="hero-return">+$18,155.02 &middot; +181.55% Return</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- KPI CARDS -->
+<!-- ============================================================ -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><span>#</span> Key Performance Indicators</h2>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Final Balance</div>
+        <div class="kpi-value green">$28,155.02</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total P&amp;L</div>
+        <div class="kpi-value green">+$18,155.02</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Return</div>
+        <div class="kpi-value green">+181.55%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total Trades</div>
+        <div class="kpi-value">149</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Win Rate</div>
+        <div class="kpi-value green">100.00%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Avg Profit / Trade</div>
+        <div class="kpi-value green">$121.85</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Sharpe Ratio</div>
+        <div class="kpi-value gold">3.12</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Max Drawdown</div>
+        <div class="kpi-value red">0.00%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Avg Duration</div>
+        <div class="kpi-value">2d 11h</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Best Trade</div>
+        <div class="kpi-value green">+$1,119.50</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- EQUITY CURVE -->
+<!-- ============================================================ -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><span>#</span> Equity Curve</h2>
+    <div class="chart-container">
+      <canvas id="equityChart" height="100"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- MONTHLY PERFORMANCE -->
+<!-- ============================================================ -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><span>#</span> Monthly Performance</h2>
+    <div class="chart-container">
+      <canvas id="monthlyChart" height="80"></canvas>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Trades</th>
+            <th>P&amp;L ($)</th>
+            <th>P&amp;L (%)</th>
+            <th>Win Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025-01</td>
+            <td>22</td>
+            <td class="pnl-pos">+$1,399.53</td>
+            <td class="pnl-pos">+14.00%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2025-02</td>
+            <td>30</td>
+            <td class="pnl-pos">+$1,962.09</td>
+            <td class="pnl-pos">+17.21%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2025-03</td>
+            <td>20</td>
+            <td class="pnl-pos">+$1,698.46</td>
+            <td class="pnl-pos">+12.71%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2025-04</td>
+            <td>4</td>
+            <td class="pnl-pos">+$216.01</td>
+            <td class="pnl-pos">+1.43%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2025-05</td>
+            <td>3</td>
+            <td class="pnl-pos">+$369.74</td>
+            <td class="pnl-pos">+2.42%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2025-06</td>
+            <td>6</td>
+            <td class="pnl-pos">+$306.33</td>
+            <td class="pnl-pos">+1.96%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2025-07</td>
+            <td>2</td>
+            <td class="pnl-pos">+$330.10</td>
+            <td class="pnl-pos">+2.07%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2025-08</td>
+            <td>6</td>
+            <td class="pnl-pos">+$422.98</td>
+            <td class="pnl-pos">+2.60%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2025-09</td>
+            <td>1</td>
+            <td class="pnl-pos">+$69.73</td>
+            <td class="pnl-pos">+0.42%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2025-10</td>
+            <td>20</td>
+            <td class="pnl-pos">+$6,243.58</td>
+            <td class="pnl-pos">+37.22%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2025-11</td>
+            <td>17</td>
+            <td class="pnl-pos">+$2,337.30</td>
+            <td class="pnl-pos">+10.15%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2025-12</td>
+            <td>6</td>
+            <td class="pnl-pos">+$293.94</td>
+            <td class="pnl-pos">+1.16%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2026-01</td>
+            <td>5</td>
+            <td class="pnl-pos">+$964.07</td>
+            <td class="pnl-pos">+3.76%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2026-02</td>
+            <td>6</td>
+            <td class="pnl-pos">+$1,393.08</td>
+            <td class="pnl-pos">+5.23%</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td>2026-03</td>
+            <td>1</td>
+            <td class="pnl-pos">+$148.08</td>
+            <td class="pnl-pos">+0.53%</td>
+            <td>100.0%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- COIN PERFORMANCE -->
+<!-- ============================================================ -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><span>#</span> Coin Performance</h2>
+    <div class="chart-container">
+      <canvas id="coinChart" height="120"></canvas>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Coin</th>
+            <th>Trades</th>
+            <th>Total Profit</th>
+            <th>Avg Profit</th>
+            <th>Win Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600">ADA</td>
+            <td>15</td>
+            <td class="pnl-pos">+$2,253.12</td>
+            <td class="pnl-pos">+$150.21</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">RENDER</td>
+            <td>10</td>
+            <td class="pnl-pos">+$1,831.04</td>
+            <td class="pnl-pos">+$183.10</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">FIL</td>
+            <td>13</td>
+            <td class="pnl-pos">+$1,738.84</td>
+            <td class="pnl-pos">+$133.76</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">APT</td>
+            <td>4</td>
+            <td class="pnl-pos">+$1,481.34</td>
+            <td class="pnl-pos">+$370.33</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">SUI</td>
+            <td>14</td>
+            <td class="pnl-pos">+$1,357.28</td>
+            <td class="pnl-pos">+$96.95</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">DOGE</td>
+            <td>10</td>
+            <td class="pnl-pos">+$1,327.65</td>
+            <td class="pnl-pos">+$132.77</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">INJ</td>
+            <td>11</td>
+            <td class="pnl-pos">+$1,278.08</td>
+            <td class="pnl-pos">+$116.19</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">SOL</td>
+            <td>8</td>
+            <td class="pnl-pos">+$1,203.22</td>
+            <td class="pnl-pos">+$150.40</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">HYPE</td>
+            <td>6</td>
+            <td class="pnl-pos">+$911.04</td>
+            <td class="pnl-pos">+$151.84</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">NEAR</td>
+            <td>5</td>
+            <td class="pnl-pos">+$777.70</td>
+            <td class="pnl-pos">+$155.54</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">AVAX</td>
+            <td>5</td>
+            <td class="pnl-pos">+$586.71</td>
+            <td class="pnl-pos">+$117.34</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">OP</td>
+            <td>7</td>
+            <td class="pnl-pos">+$493.48</td>
+            <td class="pnl-pos">+$70.50</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">BNB</td>
+            <td>3</td>
+            <td class="pnl-pos">+$484.16</td>
+            <td class="pnl-pos">+$161.39</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">DOT</td>
+            <td>7</td>
+            <td class="pnl-pos">+$450.16</td>
+            <td class="pnl-pos">+$64.31</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">XRP</td>
+            <td>7</td>
+            <td class="pnl-pos">+$433.16</td>
+            <td class="pnl-pos">+$61.88</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">UNI</td>
+            <td>8</td>
+            <td class="pnl-pos">+$409.60</td>
+            <td class="pnl-pos">+$51.20</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">ARB</td>
+            <td>7</td>
+            <td class="pnl-pos">+$405.62</td>
+            <td class="pnl-pos">+$57.95</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">ETH</td>
+            <td>3</td>
+            <td class="pnl-pos">+$376.83</td>
+            <td class="pnl-pos">+$125.61</td>
+            <td>100.0%</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">LINK</td>
+            <td>6</td>
+            <td class="pnl-pos">+$355.97</td>
+            <td class="pnl-pos">+$59.33</td>
+            <td>100.0%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- TRADE DISTRIBUTION -->
+<!-- ============================================================ -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><span>#</span> Trade Distribution</h2>
+    <div class="charts-row">
+      <div class="chart-container">
+        <canvas id="profitDistChart" height="140"></canvas>
+      </div>
+      <div class="chart-container">
+        <canvas id="durationDistChart" height="140"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- DETAILED TRADE LOG -->
+<!-- ============================================================ -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><span>#</span> Detailed Trade Log</h2>
+    <div class="trade-log-wrap">
+      <table id="tradeLogTable">
+        <thead>
+          <tr>
+            <th onclick="sortTable(0,'num')">#</th>
+            <th onclick="sortTable(1,'str')">Open Date</th>
+            <th onclick="sortTable(2,'str')">Close Date</th>
+            <th onclick="sortTable(3,'str')">Pair</th>
+            <th onclick="sortTable(4,'str')">Dir</th>
+            <th onclick="sortTable(5,'num')">Entry Price</th>
+            <th onclick="sortTable(6,'num')">Exit Price</th>
+            <th onclick="sortTable(7,'num')">Lev</th>
+            <th onclick="sortTable(8,'num')">Profit %</th>
+            <th onclick="sortTable(9,'num')">P&amp;L ($)</th>
+            <th onclick="sortTable(10,'str')">Duration</th>
+            <th onclick="sortTable(11,'str')">Exit Reason</th>
+            <th onclick="sortTable(12,'str')">Enter Tag</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="win">
+            <td>1</td>
+            <td>2025-01-19 15:05</td>
+            <td>2025-01-19 15:10</td>
+            <td style="font-weight:600">SOL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>266.79</td>
+            <td>271.41</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.95%</td>
+            <td class="pnl-pos">+$40.83</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_111 ( 144 )">exit_long_tc_d_1_111 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>2</td>
+            <td>2025-01-19 22:10</td>
+            <td>2025-01-19 22:20</td>
+            <td style="font-weight:600">SOL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>248.49</td>
+            <td>256.52</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+9.45%</td>
+            <td class="pnl-pos">+$78.28</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_3_120 ( 143 )">exit_long_tc_d_3_120 ( 143 )</td>
+            <td style="font-size:11px">143</td>
+          </tr>
+          <tr class="win">
+            <td>3</td>
+            <td>2025-01-19 22:40</td>
+            <td>2025-01-19 23:00</td>
+            <td style="font-weight:600">SOL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>246.4</td>
+            <td>252.82</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+7.57%</td>
+            <td class="pnl-pos">+$63.20</td>
+            <td>20m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_120 ( 145 )">exit_long_tc_d_2_120 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>4</td>
+            <td>2025-01-19 22:50</td>
+            <td>2025-01-19 23:00</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.992</td>
+            <td>1.0148</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.65%</td>
+            <td class="pnl-pos">+$55.52</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_20 ( 145 )">exit_long_tc_d_2_20 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>5</td>
+            <td>2025-01-19 22:50</td>
+            <td>2025-01-19 23:00</td>
+            <td style="font-weight:600">AVAX</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>35.764</td>
+            <td>36.514</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.05%</td>
+            <td class="pnl-pos">+$50.48</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_20 ( 145 )">exit_long_tc_d_2_20 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>6</td>
+            <td>2025-01-19 22:50</td>
+            <td>2025-01-19 23:00</td>
+            <td style="font-weight:600">DOT</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>6.221</td>
+            <td>6.351</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.02%</td>
+            <td class="pnl-pos">+$50.30</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_20 ( 145 )">exit_long_tc_d_2_20 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>7</td>
+            <td>2025-01-19 22:50</td>
+            <td>2025-01-19 23:00</td>
+            <td style="font-weight:600">OP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.7218</td>
+            <td>1.7566</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.82%</td>
+            <td class="pnl-pos">+$48.59</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_20 ( 145 )">exit_long_tc_d_1_20 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>8</td>
+            <td>2025-01-19 22:50</td>
+            <td>2025-01-19 23:00</td>
+            <td style="font-weight:600">ARB</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.7036</td>
+            <td>0.7154</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.79%</td>
+            <td class="pnl-pos">+$39.98</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_20 ( 145 )">exit_long_tc_d_1_20 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>9</td>
+            <td>2025-01-19 23:30</td>
+            <td>2025-01-19 23:35</td>
+            <td style="font-weight:600">INJ</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>20.366</td>
+            <td>20.784</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.91%</td>
+            <td class="pnl-pos">+$50.88</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_20 ( 145 )">exit_long_tc_d_1_20 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>10</td>
+            <td>2025-01-20 00:50</td>
+            <td>2025-01-20 01:10</td>
+            <td style="font-weight:600">LINK</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>23.46</td>
+            <td>23.865</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.93%</td>
+            <td class="pnl-pos">+$42.68</td>
+            <td>20m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_120 ( 144 )">exit_long_tc_d_1_120 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>11</td>
+            <td>2025-01-20 00:50</td>
+            <td>2025-01-20 02:05</td>
+            <td style="font-weight:600">ARB</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.6677</td>
+            <td>0.6811</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.78%</td>
+            <td class="pnl-pos">+$49.95</td>
+            <td>1h 15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_114 ( 144 145 )">exit_long_tc_d_1_114 ( 144 145 )</td>
+            <td style="font-size:11px">144 145</td>
+          </tr>
+          <tr class="win">
+            <td>12</td>
+            <td>2025-01-19 23:30</td>
+            <td>2025-01-20 02:15</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.972</td>
+            <td>0.9944</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.64%</td>
+            <td class="pnl-pos">+$57.12</td>
+            <td>2h 45m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_95 ( 145 )">exit_long_tc_d_2_95 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>13</td>
+            <td>2025-01-20 00:50</td>
+            <td>2025-01-20 04:45</td>
+            <td style="font-weight:600">NEAR</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>4.761</td>
+            <td>5.009</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+15.37%</td>
+            <td class="pnl-pos">+$132.79</td>
+            <td>3h 55m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_5_84 ( 144 145 )">exit_long_tc_d_5_84 ( 144 145 )</td>
+            <td style="font-size:11px">144 145</td>
+          </tr>
+          <tr class="win">
+            <td>14</td>
+            <td>2025-01-19 23:30</td>
+            <td>2025-01-20 05:10</td>
+            <td style="font-weight:600">FIL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>4.883</td>
+            <td>5.095</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+12.74%</td>
+            <td class="pnl-pos">+$109.67</td>
+            <td>5h 40m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_4_119 ( 145 )">exit_long_tc_d_4_119 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>15</td>
+            <td>2025-01-20 00:40</td>
+            <td>2025-01-20 05:10</td>
+            <td style="font-weight:600">OP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.6556</td>
+            <td>1.7292</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+13.09%</td>
+            <td class="pnl-pos">+$113.16</td>
+            <td>4h 30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_4_5 ( 144 )">exit_long_tc_d_4_5 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>16</td>
+            <td>2025-01-20 17:40</td>
+            <td>2025-01-20 17:55</td>
+            <td style="font-weight:600">INJ</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>21.09</td>
+            <td>21.464</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.08%</td>
+            <td class="pnl-pos">+$45.98</td>
+            <td>15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_96 ( 142 )">exit_long_tc_d_1_96 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>17</td>
+            <td>2025-01-20 17:40</td>
+            <td>2025-01-20 18:05</td>
+            <td style="font-weight:600">LINK</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>24.368</td>
+            <td>24.983</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+7.33%</td>
+            <td class="pnl-pos">+$66.40</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_120 ( 142 )">exit_long_tc_d_2_120 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>18</td>
+            <td>2025-01-20 17:40</td>
+            <td>2025-01-20 18:10</td>
+            <td style="font-weight:600">XRP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.1076</td>
+            <td>3.1745</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.21%</td>
+            <td class="pnl-pos">+$56.32</td>
+            <td>30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_120 ( 142 )">exit_long_tc_d_2_120 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>19</td>
+            <td>2025-01-20 17:40</td>
+            <td>2025-01-20 18:10</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.9936</td>
+            <td>1.0257</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+9.44%</td>
+            <td class="pnl-pos">+$85.58</td>
+            <td>30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_3_87 ( 142 )">exit_long_tc_d_3_87 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>20</td>
+            <td>2025-01-20 17:45</td>
+            <td>2025-01-20 20:55</td>
+            <td style="font-weight:600">DOGE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.34986</td>
+            <td>0.36491</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+12.65%</td>
+            <td class="pnl-pos">+$114.70</td>
+            <td>3h 10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_4_95 ( 142 )">exit_long_tc_d_4_95 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>21</td>
+            <td>2025-01-20 17:40</td>
+            <td>2025-01-20 22:05</td>
+            <td style="font-weight:600">OP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.678</td>
+            <td>1.6857</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+1.14%</td>
+            <td class="pnl-pos">+$10.29</td>
+            <td>4h 25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_profit_long_normal_t_0_1_m ( 6 141 142 )">exit_profit_long_normal_t_0_1_m ( 6 141 142 )</td>
+            <td style="font-size:11px">6 141 142</td>
+          </tr>
+          <tr class="win">
+            <td>22</td>
+            <td>2025-01-21 00:55</td>
+            <td>2025-01-21 10:20</td>
+            <td style="font-weight:600">SOL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>236.39</td>
+            <td>239.7</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.93%</td>
+            <td class="pnl-pos">+$36.83</td>
+            <td>9h 25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_119 ( 145 )">exit_long_tc_d_1_119 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>23</td>
+            <td>2025-02-02 18:00</td>
+            <td>2025-02-02 18:10</td>
+            <td style="font-weight:600">FIL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.85</td>
+            <td>3.893</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.11%</td>
+            <td class="pnl-pos">+$29.24</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_u_1 ( 144 )">exit_long_tc_u_1 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>24</td>
+            <td>2025-02-02 18:20</td>
+            <td>2025-02-02 19:35</td>
+            <td style="font-weight:600">XRP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.5333</td>
+            <td>2.6358</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+11.89%</td>
+            <td class="pnl-pos">+$112.13</td>
+            <td>1h 15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_3_123 ( 145 )">exit_long_tc_d_3_123 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>25</td>
+            <td>2025-02-02 18:55</td>
+            <td>2025-02-02 19:40</td>
+            <td style="font-weight:600">RENDER</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>4.676</td>
+            <td>4.832</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+9.76%</td>
+            <td class="pnl-pos">+$92.06</td>
+            <td>45m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_3_127 ( 144 )">exit_long_tc_d_3_127 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>26</td>
+            <td>2025-02-02 19:15</td>
+            <td>2025-02-02 19:40</td>
+            <td style="font-weight:600">DOT</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>5.135</td>
+            <td>5.296</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+9.16%</td>
+            <td class="pnl-pos">+$86.38</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_quick_d_3_127 ( 46 )">exit_long_quick_d_3_127 ( 46 )</td>
+            <td style="font-size:11px">46</td>
+          </tr>
+          <tr class="win">
+            <td>27</td>
+            <td>2025-02-02 19:15</td>
+            <td>2025-02-02 19:40</td>
+            <td style="font-weight:600">INJ</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>15.951</td>
+            <td>16.52</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+10.45%</td>
+            <td class="pnl-pos">+$98.58</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_quick_d_3_127 ( 46 )">exit_long_quick_d_3_127 ( 46 )</td>
+            <td style="font-size:11px">46</td>
+          </tr>
+          <tr class="win">
+            <td>28</td>
+            <td>2025-02-02 22:55</td>
+            <td>2025-02-02 23:20</td>
+            <td style="font-weight:600">FIL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.45</td>
+            <td>3.529</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.62%</td>
+            <td class="pnl-pos">+$64.61</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_65 ( 143 )">exit_long_tc_d_2_65 ( 143 )</td>
+            <td style="font-size:11px">143</td>
+          </tr>
+          <tr class="win">
+            <td>29</td>
+            <td>2025-02-02 23:05</td>
+            <td>2025-02-03 00:00</td>
+            <td style="font-weight:600">INJ</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>15.266</td>
+            <td>15.508</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.56%</td>
+            <td class="pnl-pos">+$44.44</td>
+            <td>55m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_46 ( 145 )">exit_long_tc_d_1_46 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>30</td>
+            <td>2025-02-03 00:45</td>
+            <td>2025-02-03 00:55</td>
+            <td style="font-weight:600">DOT</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>4.752</td>
+            <td>4.923</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+10.55%</td>
+            <td class="pnl-pos">+$103.80</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_3_71 ( 142 )">exit_long_tc_d_3_71 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>31</td>
+            <td>2025-02-03 00:45</td>
+            <td>2025-02-03 01:05</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.7347</td>
+            <td>0.7659</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+12.49%</td>
+            <td class="pnl-pos">+$122.92</td>
+            <td>20m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_4_71 ( 142 )">exit_long_tc_d_4_71 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>32</td>
+            <td>2025-02-03 01:55</td>
+            <td>2025-02-03 02:20</td>
+            <td style="font-weight:600">XRP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.0933</td>
+            <td>2.1403</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.49%</td>
+            <td class="pnl-pos">+$65.10</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_normal_d_2_65 ( 1 4 )">exit_long_normal_d_2_65 ( 1 4 )</td>
+            <td style="font-size:11px">1 4</td>
+          </tr>
+          <tr class="win">
+            <td>33</td>
+            <td>2025-02-03 01:55</td>
+            <td>2025-02-03 02:40</td>
+            <td style="font-weight:600">DOGE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.22772</td>
+            <td>0.23117</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.3%</td>
+            <td class="pnl-pos">+$43.15</td>
+            <td>45m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_normal_d_1_71 ( 4 43 63 )">exit_long_normal_d_1_71 ( 4 43 63 )</td>
+            <td style="font-size:11px">4 43 63</td>
+          </tr>
+          <tr class="win">
+            <td>34</td>
+            <td>2025-02-03 03:00</td>
+            <td>2025-02-03 03:05</td>
+            <td style="font-weight:600">DOGE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.22783</td>
+            <td>0.23393</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+7.79%</td>
+            <td class="pnl-pos">+$39.22</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rebuy_w_2_3 ( 63 )">exit_long_rebuy_w_2_3 ( 63 )</td>
+            <td style="font-size:11px">63</td>
+          </tr>
+          <tr class="win">
+            <td>35</td>
+            <td>2025-02-03 01:55</td>
+            <td>2025-02-03 03:20</td>
+            <td style="font-weight:600">LINK</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>17.611</td>
+            <td>17.973</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.92%</td>
+            <td class="pnl-pos">+$59.40</td>
+            <td>1h 25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_normal_d_1_78 ( 2 4 5 63 143 )">exit_long_normal_d_1_78 ( 2 4 5 63 143 )</td>
+            <td style="font-size:11px">2 4 5 63 143</td>
+          </tr>
+          <tr class="win">
+            <td>36</td>
+            <td>2025-02-03 01:55</td>
+            <td>2025-02-03 03:20</td>
+            <td style="font-weight:600">DOT</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>4.279</td>
+            <td>4.344</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.31%</td>
+            <td class="pnl-pos">+$43.26</td>
+            <td>1h 25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_normal_d_1_78 ( 5 43 )">exit_long_normal_d_1_78 ( 5 43 )</td>
+            <td style="font-size:11px">5 43</td>
+          </tr>
+          <tr class="win">
+            <td>37</td>
+            <td>2025-02-03 04:20</td>
+            <td>2025-02-03 05:30</td>
+            <td style="font-weight:600">LINK</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>17.524</td>
+            <td>17.879</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.83%</td>
+            <td class="pnl-pos">+$59.44</td>
+            <td>1h 10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_13 ( 62 144 )">exit_long_tc_d_1_13 ( 62 144 )</td>
+            <td style="font-size:11px">62 144</td>
+          </tr>
+          <tr class="win">
+            <td>38</td>
+            <td>2025-02-03 05:00</td>
+            <td>2025-02-03 05:35</td>
+            <td style="font-weight:600">DOGE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.22262</td>
+            <td>0.23164</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+11.91%</td>
+            <td class="pnl-pos">+$60.67</td>
+            <td>35m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rebuy_w_3_11 ( 62 )">exit_long_rebuy_w_3_11 ( 62 )</td>
+            <td style="font-size:11px">62</td>
+          </tr>
+          <tr class="win">
+            <td>39</td>
+            <td>2025-02-03 01:50</td>
+            <td>2025-02-03 07:45</td>
+            <td style="font-weight:600">BNB</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>566.85</td>
+            <td>574.17</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.63%</td>
+            <td class="pnl-pos">+$36.38</td>
+            <td>5h 55m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_61 ( 141 )">exit_long_tc_d_1_61 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>40</td>
+            <td>2025-02-03 14:05</td>
+            <td>2025-02-03 14:35</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.034</td>
+            <td>3.2015</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+16.31%</td>
+            <td class="pnl-pos">+$168.31</td>
+            <td>30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_w_5_6 ( 145 )">exit_long_tc_w_5_6 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>41</td>
+            <td>2025-02-04 05:35</td>
+            <td>2025-02-04 05:50</td>
+            <td style="font-weight:600">XRP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.5181</td>
+            <td>2.5454</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.01%</td>
+            <td class="pnl-pos">+$31.82</td>
+            <td>15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_u_1 ( 141 )">exit_long_tc_u_1 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>42</td>
+            <td>2025-02-04 05:35</td>
+            <td>2025-02-04 05:50</td>
+            <td style="font-weight:600">OP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.0751</td>
+            <td>1.0856</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+2.69%</td>
+            <td class="pnl-pos">+$28.41</td>
+            <td>15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_0_67 ( 141 )">exit_long_tc_d_0_67 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>43</td>
+            <td>2025-02-04 05:35</td>
+            <td>2025-02-04 06:05</td>
+            <td style="font-weight:600">AVAX</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>25.941</td>
+            <td>26.236</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.17%</td>
+            <td class="pnl-pos">+$33.44</td>
+            <td>30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_20 ( 141 )">exit_long_tc_d_1_20 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>44</td>
+            <td>2025-02-04 05:35</td>
+            <td>2025-02-04 06:05</td>
+            <td style="font-weight:600">DOT</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>4.699</td>
+            <td>4.751</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.08%</td>
+            <td class="pnl-pos">+$32.53</td>
+            <td>30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_20 ( 141 )">exit_long_tc_d_1_20 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>45</td>
+            <td>2025-02-04 05:35</td>
+            <td>2025-02-04 06:05</td>
+            <td style="font-weight:600">INJ</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>14.088</td>
+            <td>14.355</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.44%</td>
+            <td class="pnl-pos">+$57.52</td>
+            <td>30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_20 ( 141 )">exit_long_tc_d_1_20 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>46</td>
+            <td>2025-02-06 16:20</td>
+            <td>2025-02-06 17:25</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.1603</td>
+            <td>3.2023</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.74%</td>
+            <td class="pnl-pos">+$40.24</td>
+            <td>1h 5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_27 ( 145 )">exit_long_tc_d_1_27 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>47</td>
+            <td>2025-02-07 20:10</td>
+            <td>2025-02-08 15:10</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.9977</td>
+            <td>3.0094</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+0.94%</td>
+            <td class="pnl-pos">+$10.09</td>
+            <td>19h 0m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_0_35 ( 141 )">exit_long_tc_d_0_35 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>48</td>
+            <td>2025-02-12 13:40</td>
+            <td>2025-02-12 13:55</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.75</td>
+            <td>0.7723</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+8.67%</td>
+            <td class="pnl-pos">+$93.58</td>
+            <td>15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_108 ( 142 )">exit_long_tc_d_2_108 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>49</td>
+            <td>2025-02-12 13:40</td>
+            <td>2025-02-12 14:45</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.1165</td>
+            <td>3.2</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+7.79%</td>
+            <td class="pnl-pos">+$84.07</td>
+            <td>1h 5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_66 ( 142 )">exit_long_tc_d_2_66 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>50</td>
+            <td>2025-02-12 13:40</td>
+            <td>2025-02-12 15:40</td>
+            <td style="font-weight:600">RENDER</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>4.259</td>
+            <td>4.416</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+10.81%</td>
+            <td class="pnl-pos">+$116.65</td>
+            <td>2h 0m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_3_119 ( 142 )">exit_long_tc_d_3_119 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>51</td>
+            <td>2025-02-24 22:10</td>
+            <td>2025-02-24 22:35</td>
+            <td style="font-weight:600">DOGE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.2097</td>
+            <td>0.21516</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+7.57%</td>
+            <td class="pnl-pos">+$83.67</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rapid_d_2_65 ( 102 )">exit_long_rapid_d_2_65 ( 102 )</td>
+            <td style="font-size:11px">102</td>
+          </tr>
+          <tr class="win">
+            <td>52</td>
+            <td>2025-02-28 02:35</td>
+            <td>2025-02-28 03:00</td>
+            <td style="font-weight:600">UNI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>7.355</td>
+            <td>7.407</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+1.88%</td>
+            <td class="pnl-pos">+$20.97</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_0_131 ( 145 )">exit_long_tc_d_0_131 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>53</td>
+            <td>2025-03-02 18:35</td>
+            <td>2025-03-02 19:05</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.9904</td>
+            <td>1.0287</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+11.35%</td>
+            <td class="pnl-pos">+$127.21</td>
+            <td>30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_3_130 ( 142 )">exit_long_tc_d_3_130 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>54</td>
+            <td>2025-03-03 08:50</td>
+            <td>2025-03-03 10:20</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.9528</td>
+            <td>0.9722</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.86%</td>
+            <td class="pnl-pos">+$66.32</td>
+            <td>1h 30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_110 ( 142 )">exit_long_tc_d_1_110 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>55</td>
+            <td>2025-03-03 19:55</td>
+            <td>2025-03-03 20:10</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.8374</td>
+            <td>0.8655</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+9.82%</td>
+            <td class="pnl-pos">+$111.62</td>
+            <td>15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_3_27 ( 145 )">exit_long_tc_d_3_27 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>56</td>
+            <td>2025-03-03 21:55</td>
+            <td>2025-03-03 22:20</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.842</td>
+            <td>0.8591</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.85%</td>
+            <td class="pnl-pos">+$67.01</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_102 ( 144 )">exit_long_tc_d_1_102 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>57</td>
+            <td>2025-03-03 19:55</td>
+            <td>2025-03-03 22:50</td>
+            <td style="font-weight:600">XRP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.3805</td>
+            <td>2.4025</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+2.53%</td>
+            <td class="pnl-pos">+$28.76</td>
+            <td>2h 55m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_0_118 ( 145 )">exit_long_tc_d_0_118 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>58</td>
+            <td>2025-03-04 01:40</td>
+            <td>2025-03-04 05:40</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.7866</td>
+            <td>0.8277</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+15.42%</td>
+            <td class="pnl-pos">+$177.96</td>
+            <td>4h 0m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_5_95 ( 144 )">exit_long_tc_d_5_95 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>59</td>
+            <td>2025-03-04 02:20</td>
+            <td>2025-03-04 19:00</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.4388</td>
+            <td>2.5118</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+8.76%</td>
+            <td class="pnl-pos">+$101.08</td>
+            <td>16h 40m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_61 ( 145 )">exit_long_tc_d_2_61 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>60</td>
+            <td>2025-03-07 00:40</td>
+            <td>2025-03-07 01:15</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.833</td>
+            <td>0.8502</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.95%</td>
+            <td class="pnl-pos">+$70.27</td>
+            <td>35m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_72 ( 143 )">exit_long_tc_d_1_72 ( 143 )</td>
+            <td style="font-size:11px">143</td>
+          </tr>
+          <tr class="win">
+            <td>61</td>
+            <td>2025-03-07 00:55</td>
+            <td>2025-03-07 01:15</td>
+            <td style="font-weight:600">LINK</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>15.915</td>
+            <td>16.275</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.54%</td>
+            <td class="pnl-pos">+$77.26</td>
+            <td>20m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_70 ( 142 )">exit_long_tc_d_2_70 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>62</td>
+            <td>2025-03-07 00:40</td>
+            <td>2025-03-07 01:25</td>
+            <td style="font-weight:600">XRP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.4449</td>
+            <td>2.4727</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.17%</td>
+            <td class="pnl-pos">+$37.42</td>
+            <td>45m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_97 ( 142 )">exit_long_tc_d_1_97 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>63</td>
+            <td>2025-03-07 00:20</td>
+            <td>2025-03-07 05:45</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.6909</td>
+            <td>2.7796</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+9.64%</td>
+            <td class="pnl-pos">+$113.88</td>
+            <td>5h 25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_w_3_12 ( 145 )">exit_long_tc_w_3_12 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>64</td>
+            <td>2025-03-10 18:00</td>
+            <td>2025-03-10 18:15</td>
+            <td style="font-weight:600">RENDER</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.717</td>
+            <td>2.766</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.17%</td>
+            <td class="pnl-pos">+$62.30</td>
+            <td>15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_27 ( 144 )">exit_long_tc_d_1_27 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>65</td>
+            <td>2025-03-10 19:00</td>
+            <td>2025-03-10 19:05</td>
+            <td style="font-weight:600">UNI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>5.801</td>
+            <td>5.844</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+1.98%</td>
+            <td class="pnl-pos">+$24.00</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_0_131 ( 144 )">exit_long_tc_d_0_131 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>66</td>
+            <td>2025-03-10 19:00</td>
+            <td>2025-03-10 19:10</td>
+            <td style="font-weight:600">DOGE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.15204</td>
+            <td>0.15315</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+1.95%</td>
+            <td class="pnl-pos">+$23.60</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_0_131 ( 144 )">exit_long_tc_d_0_131 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>67</td>
+            <td>2025-03-10 19:05</td>
+            <td>2025-03-10 19:15</td>
+            <td style="font-weight:600">INJ</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>8.782</td>
+            <td>8.924</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.61%</td>
+            <td class="pnl-pos">+$55.87</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_20 ( 144 )">exit_long_tc_d_1_20 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>68</td>
+            <td>2025-03-10 19:10</td>
+            <td>2025-03-10 19:20</td>
+            <td style="font-weight:600">RENDER</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.673</td>
+            <td>2.735</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.71%</td>
+            <td class="pnl-pos">+$81.55</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_27 ( 144 )">exit_long_tc_d_2_27 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>69</td>
+            <td>2025-03-11 00:55</td>
+            <td>2025-03-11 01:20</td>
+            <td style="font-weight:600">OP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.7548</td>
+            <td>0.7639</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.37%</td>
+            <td class="pnl-pos">+$41.37</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_27 ( 142 )">exit_long_tc_d_1_27 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>70</td>
+            <td>2025-03-11 01:05</td>
+            <td>2025-03-11 01:20</td>
+            <td style="font-weight:600">INJ</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>8.238</td>
+            <td>8.336</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.33%</td>
+            <td class="pnl-pos">+$40.78</td>
+            <td>15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_56 ( 143 )">exit_long_tc_d_1_56 ( 143 )</td>
+            <td style="font-size:11px">143</td>
+          </tr>
+          <tr class="win">
+            <td>71</td>
+            <td>2025-03-11 01:05</td>
+            <td>2025-03-11 01:35</td>
+            <td style="font-weight:600">FIL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.475</td>
+            <td>2.531</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.54%</td>
+            <td class="pnl-pos">+$80.22</td>
+            <td>30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_65 ( 142 )">exit_long_tc_d_2_65 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>72</td>
+            <td>2025-02-02 22:40</td>
+            <td>2025-03-19 10:35</td>
+            <td style="font-weight:600">ETH</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1911.65</td>
+            <td>1982.43</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.85%</td>
+            <td class="pnl-pos">+$309.98</td>
+            <td>44d 11h</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_grind_g ( 120 )">exit_long_grind_g ( 120 )</td>
+            <td style="font-size:11px">120</td>
+          </tr>
+          <tr class="win">
+            <td>73</td>
+            <td>2025-04-06 20:55</td>
+            <td>2025-04-06 21:20</td>
+            <td style="font-weight:600">ETH</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1572.72</td>
+            <td>1592.38</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.51%</td>
+            <td class="pnl-pos">+$21.80</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rebuy_d_1_65 ( 62 )">exit_long_rebuy_d_1_65 ( 62 )</td>
+            <td style="font-size:11px">62</td>
+          </tr>
+          <tr class="win">
+            <td>74</td>
+            <td>2025-04-07 07:00</td>
+            <td>2025-04-07 07:10</td>
+            <td style="font-weight:600">ETH</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1430.49</td>
+            <td>1448.91</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.62%</td>
+            <td class="pnl-pos">+$45.05</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_u_1 ( 144 )">exit_long_tc_u_1 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>75</td>
+            <td>2025-04-07 06:40</td>
+            <td>2025-04-07 08:20</td>
+            <td style="font-weight:600">XRP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.6745</td>
+            <td>1.7216</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+8.16%</td>
+            <td class="pnl-pos">+$101.60</td>
+            <td>1h 40m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_26 ( 142 143 )">exit_long_tc_d_2_26 ( 142 143 )</td>
+            <td style="font-size:11px">142 143</td>
+          </tr>
+          <tr class="win">
+            <td>76</td>
+            <td>2025-04-07 06:45</td>
+            <td>2025-04-07 08:25</td>
+            <td style="font-weight:600">DOGE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.13378</td>
+            <td>0.1373</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+7.64%</td>
+            <td class="pnl-pos">+$47.56</td>
+            <td>1h 40m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rebuy_w_2_11 ( 62 )">exit_long_rebuy_w_2_11 ( 62 )</td>
+            <td style="font-size:11px">62</td>
+          </tr>
+          <tr class="win">
+            <td>77</td>
+            <td>2025-05-12 18:50</td>
+            <td>2025-05-12 22:35</td>
+            <td style="font-weight:600">RENDER</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>4.867</td>
+            <td>5.175</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+18.71%</td>
+            <td class="pnl-pos">+$236.85</td>
+            <td>3h 45m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_6_84 ( 141 142 )">exit_long_tc_d_6_84 ( 141 142 )</td>
+            <td style="font-size:11px">141 142</td>
+          </tr>
+          <tr class="win">
+            <td>78</td>
+            <td>2025-05-23 11:55</td>
+            <td>2025-05-23 19:10</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.6763</td>
+            <td>3.7251</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.73%</td>
+            <td class="pnl-pos">+$48.17</td>
+            <td>7h 15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_119 ( 141 )">exit_long_tc_d_1_119 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>79</td>
+            <td>2025-05-30 16:35</td>
+            <td>2025-05-30 18:55</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.2788</td>
+            <td>3.3528</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.53%</td>
+            <td class="pnl-pos">+$84.72</td>
+            <td>2h 20m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_normal_d_2_45 ( 6 141 )">exit_long_normal_d_2_45 ( 6 141 )</td>
+            <td style="font-size:11px">6 141</td>
+          </tr>
+          <tr class="win">
+            <td>80</td>
+            <td>2025-06-13 00:35</td>
+            <td>2025-06-13 01:00</td>
+            <td style="font-weight:600">SOL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>143.63</td>
+            <td>145.47</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.6%</td>
+            <td class="pnl-pos">+$47.18</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_20 ( 141 )">exit_long_tc_d_1_20 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>81</td>
+            <td>2025-06-13 00:55</td>
+            <td>2025-06-13 03:20</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.9775</td>
+            <td>3.0183</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.87%</td>
+            <td class="pnl-pos">+$50.69</td>
+            <td>2h 25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_w_1_11 ( 143 )">exit_long_tc_w_1_11 ( 143 )</td>
+            <td style="font-size:11px">143</td>
+          </tr>
+          <tr class="win">
+            <td>82</td>
+            <td>2025-06-13 00:30</td>
+            <td>2025-06-13 03:35</td>
+            <td style="font-weight:600">HYPE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>38.719</td>
+            <td>39.343</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.59%</td>
+            <td class="pnl-pos">+$60.17</td>
+            <td>3h 5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_45 ( 142 )">exit_long_tc_d_1_45 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>83</td>
+            <td>2025-06-13 00:40</td>
+            <td>2025-06-13 08:15</td>
+            <td style="font-weight:600">LINK</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>13.203</td>
+            <td>13.382</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.88%</td>
+            <td class="pnl-pos">+$50.80</td>
+            <td>7h 35m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_61 ( 141 )">exit_long_tc_d_1_61 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>84</td>
+            <td>2025-06-18 18:50</td>
+            <td>2025-06-18 20:40</td>
+            <td style="font-weight:600">UNI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>7.417</td>
+            <td>7.49</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+2.71%</td>
+            <td class="pnl-pos">+$35.93</td>
+            <td>1h 50m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_scalp_d_0_119 ( 161 )">exit_long_scalp_d_0_119 ( 161 )</td>
+            <td style="font-size:11px">161</td>
+          </tr>
+          <tr class="win">
+            <td>85</td>
+            <td>2025-06-30 15:35</td>
+            <td>2025-06-30 17:05</td>
+            <td style="font-weight:600">ARB</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.3397</td>
+            <td>0.3452</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.61%</td>
+            <td class="pnl-pos">+$61.56</td>
+            <td>1h 30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_95 ( 145 )">exit_long_tc_d_1_95 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>86</td>
+            <td>2025-07-24 06:45</td>
+            <td>2025-07-24 08:00</td>
+            <td style="font-weight:600">INJ</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>12.966</td>
+            <td>13.403</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+9.83%</td>
+            <td class="pnl-pos">+$131.91</td>
+            <td>1h 15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_3_49 ( 145 )">exit_long_tc_d_3_49 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>87</td>
+            <td>2025-07-24 06:45</td>
+            <td>2025-07-24 08:15</td>
+            <td style="font-weight:600">DOGE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.22458</td>
+            <td>0.23585</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+14.77%</td>
+            <td class="pnl-pos">+$198.19</td>
+            <td>1h 30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_4_49 ( 145 )">exit_long_tc_d_4_49 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>88</td>
+            <td>2025-08-14 12:35</td>
+            <td>2025-08-14 12:40</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.9047</td>
+            <td>0.9173</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.93%</td>
+            <td class="pnl-pos">+$53.86</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_u_1 ( 142 )">exit_long_tc_u_1 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>89</td>
+            <td>2025-08-14 12:35</td>
+            <td>2025-08-14 12:40</td>
+            <td style="font-weight:600">RENDER</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.787</td>
+            <td>3.833</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.4%</td>
+            <td class="pnl-pos">+$46.56</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_u_1 ( 142 )">exit_long_tc_u_1 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>90</td>
+            <td>2025-08-14 12:35</td>
+            <td>2025-08-14 13:15</td>
+            <td style="font-weight:600">AVAX</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>23.648</td>
+            <td>23.949</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.58%</td>
+            <td class="pnl-pos">+$48.78</td>
+            <td>40m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_20 ( 142 )">exit_long_tc_d_1_20 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>91</td>
+            <td>2025-08-14 12:35</td>
+            <td>2025-08-14 13:15</td>
+            <td style="font-weight:600">DOT</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.994</td>
+            <td>4.054</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.26%</td>
+            <td class="pnl-pos">+$58.36</td>
+            <td>40m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_120 ( 142 )">exit_long_tc_d_1_120 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>92</td>
+            <td>2025-08-14 12:35</td>
+            <td>2025-08-14 13:15</td>
+            <td style="font-weight:600">NEAR</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.793</td>
+            <td>2.837</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.48%</td>
+            <td class="pnl-pos">+$61.33</td>
+            <td>40m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_120 ( 142 )">exit_long_tc_d_1_120 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>93</td>
+            <td>2025-08-14 13:05</td>
+            <td>2025-08-14 13:15</td>
+            <td style="font-weight:600">SOL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>188.31</td>
+            <td>195.49</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+11.19%</td>
+            <td class="pnl-pos">+$154.09</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_3_120 ( 142 )">exit_long_tc_d_3_120 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>94</td>
+            <td>2025-09-22 06:05</td>
+            <td>2025-09-22 06:10</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.8002</td>
+            <td>0.8141</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.97%</td>
+            <td class="pnl-pos">+$69.73</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_u_1 ( 141 )">exit_long_tc_u_1 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>95</td>
+            <td>2025-10-10 21:20</td>
+            <td>2025-10-10 21:25</td>
+            <td style="font-weight:600">SOL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>149.35</td>
+            <td>175.57</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+52.39%</td>
+            <td class="pnl-pos">+$736.52</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_u_11 ( 143 )">exit_long_tc_u_11 ( 143 )</td>
+            <td style="font-size:11px">143</td>
+          </tr>
+          <tr class="win">
+            <td>96</td>
+            <td>2025-10-10 21:20</td>
+            <td>2025-10-10 21:25</td>
+            <td style="font-weight:600">APT</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.3268</td>
+            <td>2.9466</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+79.61%</td>
+            <td class="pnl-pos">+$1,119.50</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_u_12 ( 143 )">exit_long_tc_u_12 ( 143 )</td>
+            <td style="font-size:11px">143</td>
+          </tr>
+          <tr class="win">
+            <td>97</td>
+            <td>2025-10-10 21:25</td>
+            <td>2025-10-10 21:35</td>
+            <td style="font-weight:600">AVAX</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>17.936</td>
+            <td>19.421</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+24.58%</td>
+            <td class="pnl-pos">+$382.21</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_normal_u_8 ( 4 41 61 )">exit_long_normal_u_8 ( 4 41 61 )</td>
+            <td style="font-size:11px">4 41 61</td>
+          </tr>
+          <tr class="win">
+            <td>98</td>
+            <td>2025-10-10 21:30</td>
+            <td>2025-10-10 21:35</td>
+            <td style="font-weight:600">BNB</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>983.81</td>
+            <td>1054.22</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+21.21%</td>
+            <td class="pnl-pos">+$330.58</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_quick_u_7 ( 43 )">exit_long_quick_u_7 ( 43 )</td>
+            <td style="font-size:11px">43</td>
+          </tr>
+          <tr class="win">
+            <td>99</td>
+            <td>2025-10-10 21:35</td>
+            <td>2025-10-10 21:45</td>
+            <td style="font-weight:600">DOGE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.16566</td>
+            <td>0.18453</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+33.91%</td>
+            <td class="pnl-pos">+$548.67</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_u_10 ( 145 )">exit_long_tc_u_10 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>100</td>
+            <td>2025-10-10 21:40</td>
+            <td>2025-10-10 22:05</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.4856</td>
+            <td>0.5901</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+64.27%</td>
+            <td class="pnl-pos">+$1,039.97</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_profit_long_tc_t_12_1_m ( 145 )">exit_profit_long_tc_t_12_1_m ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>101</td>
+            <td>2025-10-10 22:05</td>
+            <td>2025-10-10 22:10</td>
+            <td style="font-weight:600">RENDER</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.887</td>
+            <td>1.968</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+12.63%</td>
+            <td class="pnl-pos">+$110.45</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rebuy_d_4_20 ( 63 )">exit_long_rebuy_d_4_20 ( 63 )</td>
+            <td style="font-size:11px">63</td>
+          </tr>
+          <tr class="win">
+            <td>102</td>
+            <td>2025-10-10 22:05</td>
+            <td>2025-10-10 22:20</td>
+            <td style="font-weight:600">OP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.4268</td>
+            <td>0.444</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+11.84%</td>
+            <td class="pnl-pos">+$103.57</td>
+            <td>15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rebuy_d_3_20 ( 63 )">exit_long_rebuy_d_3_20 ( 63 )</td>
+            <td style="font-size:11px">63</td>
+          </tr>
+          <tr class="win">
+            <td>103</td>
+            <td>2025-10-10 22:05</td>
+            <td>2025-10-10 22:20</td>
+            <td style="font-weight:600">INJ</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>7.417</td>
+            <td>7.806</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+15.48%</td>
+            <td class="pnl-pos">+$135.40</td>
+            <td>15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rebuy_d_4_20 ( 63 )">exit_long_rebuy_d_4_20 ( 63 )</td>
+            <td style="font-size:11px">63</td>
+          </tr>
+          <tr class="win">
+            <td>104</td>
+            <td>2025-10-10 22:10</td>
+            <td>2025-10-10 22:20</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.4203</td>
+            <td>2.5071</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+10.51%</td>
+            <td class="pnl-pos">+$92.41</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rebuy_d_3_27 ( 63 )">exit_long_rebuy_d_3_27 ( 63 )</td>
+            <td style="font-size:11px">63</td>
+          </tr>
+          <tr class="win">
+            <td>105</td>
+            <td>2025-10-10 22:30</td>
+            <td>2025-10-10 22:40</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.4299</td>
+            <td>2.491</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+7.3%</td>
+            <td class="pnl-pos">+$65.16</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rebuy_d_2_27 ( 63 )">exit_long_rebuy_d_2_27 ( 63 )</td>
+            <td style="font-size:11px">63</td>
+          </tr>
+          <tr class="win">
+            <td>106</td>
+            <td>2025-10-10 22:05</td>
+            <td>2025-10-10 22:50</td>
+            <td style="font-weight:600">BNB</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1082.29</td>
+            <td>1131.61</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+13.42%</td>
+            <td class="pnl-pos">+$117.21</td>
+            <td>45m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rebuy_d_4_45 ( 63 )">exit_long_rebuy_d_4_45 ( 63 )</td>
+            <td style="font-size:11px">63</td>
+          </tr>
+          <tr class="win">
+            <td>107</td>
+            <td>2025-10-10 22:20</td>
+            <td>2025-10-10 22:50</td>
+            <td style="font-weight:600">ADA</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.5959</td>
+            <td>0.6085</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.1%</td>
+            <td class="pnl-pos">+$54.45</td>
+            <td>30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rebuy_d_1_27 ( 63 )">exit_long_rebuy_d_1_27 ( 63 )</td>
+            <td style="font-size:11px">63</td>
+          </tr>
+          <tr class="win">
+            <td>108</td>
+            <td>2025-10-10 22:05</td>
+            <td>2025-10-10 23:30</td>
+            <td style="font-weight:600">SOL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>188.0</td>
+            <td>191.47</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.29%</td>
+            <td class="pnl-pos">+$46.29</td>
+            <td>1h 25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rebuy_d_1_95 ( 63 )">exit_long_rebuy_d_1_95 ( 63 )</td>
+            <td style="font-size:11px">63</td>
+          </tr>
+          <tr class="win">
+            <td>109</td>
+            <td>2025-10-11 01:55</td>
+            <td>2025-10-11 02:20</td>
+            <td style="font-weight:600">HYPE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>36.44</td>
+            <td>37.861</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+11.45%</td>
+            <td class="pnl-pos">+$207.13</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rapid_d_3_114 ( 104 )">exit_long_rapid_d_3_114 ( 104 )</td>
+            <td style="font-size:11px">104</td>
+          </tr>
+          <tr class="win">
+            <td>110</td>
+            <td>2025-10-17 07:10</td>
+            <td>2025-10-17 11:35</td>
+            <td style="font-weight:600">HYPE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>34.544</td>
+            <td>35.514</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+8.16%</td>
+            <td class="pnl-pos">+$149.07</td>
+            <td>4h 25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_2 ( 142 )">exit_long_tc_d_2_2 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>111</td>
+            <td>2025-10-29 18:40</td>
+            <td>2025-10-29 19:15</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.4464</td>
+            <td>2.5605</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+13.74%</td>
+            <td class="pnl-pos">+$251.21</td>
+            <td>35m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_4_119 ( 145 )">exit_long_tc_d_4_119 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>112</td>
+            <td>2025-10-29 18:40</td>
+            <td>2025-10-29 19:15</td>
+            <td style="font-weight:600">NEAR</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.237</td>
+            <td>2.336</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+13.03%</td>
+            <td class="pnl-pos">+$238.07</td>
+            <td>35m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_4_119 ( 145 )">exit_long_tc_d_4_119 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>113</td>
+            <td>2025-10-29 18:40</td>
+            <td>2025-10-29 19:15</td>
+            <td style="font-weight:600">APT</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.3163</td>
+            <td>3.4668</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+13.36%</td>
+            <td class="pnl-pos">+$244.31</td>
+            <td>35m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_4_119 ( 145 )">exit_long_tc_d_4_119 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>114</td>
+            <td>2025-10-29 18:40</td>
+            <td>2025-10-29 20:30</td>
+            <td style="font-weight:600">RENDER</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.365</td>
+            <td>2.484</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+14.85%</td>
+            <td class="pnl-pos">+$271.41</td>
+            <td>1h 50m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_4_119 ( 145 )">exit_long_tc_d_4_119 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>115</td>
+            <td>2025-04-04 10:10</td>
+            <td>2025-11-02 09:10</td>
+            <td style="font-weight:600">FIL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.603</td>
+            <td>1.737</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.58%</td>
+            <td class="pnl-pos">+$389.51</td>
+            <td>211d 23h</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_grind_g ( 120 )">exit_long_grind_g ( 120 )</td>
+            <td style="font-size:11px">120</td>
+          </tr>
+          <tr class="win">
+            <td>116</td>
+            <td>2025-11-03 15:35</td>
+            <td>2025-11-03 15:40</td>
+            <td style="font-weight:600">APT</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.8705</td>
+            <td>2.9164</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.55%</td>
+            <td class="pnl-pos">+$87.96</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_normal_u_1 ( 2 )">exit_long_normal_u_1 ( 2 )</td>
+            <td style="font-size:11px">2</td>
+          </tr>
+          <tr class="win">
+            <td>117</td>
+            <td>2025-11-03 15:45</td>
+            <td>2025-11-03 16:15</td>
+            <td style="font-weight:600">INJ</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>6.805</td>
+            <td>6.829</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+0.86%</td>
+            <td class="pnl-pos">+$16.66</td>
+            <td>30m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_0_48 ( 142 )">exit_long_tc_d_0_48 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>118</td>
+            <td>2025-11-03 15:50</td>
+            <td>2025-11-03 16:15</td>
+            <td style="font-weight:600">FIL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.466</td>
+            <td>1.489</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.48%</td>
+            <td class="pnl-pos">+$86.78</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_71 ( 142 )">exit_long_tc_d_1_71 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>119</td>
+            <td>2025-11-03 15:50</td>
+            <td>2025-11-03 16:15</td>
+            <td style="font-weight:600">HYPE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>38.938</td>
+            <td>39.795</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.34%</td>
+            <td class="pnl-pos">+$122.99</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_27 ( 142 )">exit_long_tc_d_2_27 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>120</td>
+            <td>2025-11-03 15:30</td>
+            <td>2025-11-03 17:10</td>
+            <td style="font-weight:600">AVAX</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>16.638</td>
+            <td>16.854</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.72%</td>
+            <td class="pnl-pos">+$71.79</td>
+            <td>1h 40m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_61 ( 141 )">exit_long_tc_d_1_61 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>121</td>
+            <td>2025-11-04 05:55</td>
+            <td>2025-11-04 06:15</td>
+            <td style="font-weight:600">FIL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.448</td>
+            <td>1.483</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+7.01%</td>
+            <td class="pnl-pos">+$137.58</td>
+            <td>20m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_96 ( 141 142 )">exit_long_tc_d_2_96 ( 141 142 )</td>
+            <td style="font-size:11px">141 142</td>
+          </tr>
+          <tr class="win">
+            <td>122</td>
+            <td>2025-11-04 20:20</td>
+            <td>2025-11-04 21:30</td>
+            <td style="font-weight:600">FIL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.304</td>
+            <td>1.308</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+0.68%</td>
+            <td class="pnl-pos">+$13.42</td>
+            <td>1h 10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_profit_long_tc_t_0_1_m ( 144 )">exit_profit_long_tc_t_0_1_m ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>123</td>
+            <td>2025-11-04 21:35</td>
+            <td>2025-11-05 01:20</td>
+            <td style="font-weight:600">DOGE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.15323</td>
+            <td>0.15772</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+8.51%</td>
+            <td class="pnl-pos">+$168.23</td>
+            <td>3h 45m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_profit_long_tc_t_2_1_m ( 145 )">exit_profit_long_tc_t_2_1_m ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>124</td>
+            <td>2025-11-07 13:05</td>
+            <td>2025-11-07 13:10</td>
+            <td style="font-weight:600">FIL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.026</td>
+            <td>2.078</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+7.45%</td>
+            <td class="pnl-pos">+$148.61</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_111 ( 144 )">exit_long_tc_d_2_111 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>125</td>
+            <td>2025-11-08 09:50</td>
+            <td>2025-11-08 10:15</td>
+            <td style="font-weight:600">FIL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.224</td>
+            <td>3.374</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+13.71%</td>
+            <td class="pnl-pos">+$274.96</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_4_42 ( 144 )">exit_long_tc_d_4_42 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>126</td>
+            <td>2025-11-08 11:40</td>
+            <td>2025-11-08 12:05</td>
+            <td style="font-weight:600">FIL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.189</td>
+            <td>3.309</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+11.04%</td>
+            <td class="pnl-pos">+$223.97</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_3_42 ( 144 )">exit_long_tc_d_3_42 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>127</td>
+            <td>2025-11-11 17:50</td>
+            <td>2025-11-12 03:55</td>
+            <td style="font-weight:600">UNI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>8.679</td>
+            <td>8.786</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.43%</td>
+            <td class="pnl-pos">+$70.33</td>
+            <td>10h 5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_w_1_10 ( 145 )">exit_long_tc_w_1_10 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>128</td>
+            <td>2025-11-17 18:35</td>
+            <td>2025-11-17 21:45</td>
+            <td style="font-weight:600">UNI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>7.262</td>
+            <td>7.353</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.52%</td>
+            <td class="pnl-pos">+$72.72</td>
+            <td>3h 10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_81 ( 144 )">exit_long_tc_d_1_81 ( 144 )</td>
+            <td style="font-size:11px">144</td>
+          </tr>
+          <tr class="win">
+            <td>129</td>
+            <td>2025-11-21 04:35</td>
+            <td>2025-11-21 04:55</td>
+            <td style="font-weight:600">FIL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.746</td>
+            <td>1.777</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.08%</td>
+            <td class="pnl-pos">+$105.70</td>
+            <td>20m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_96 ( 145 )">exit_long_tc_d_1_96 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>130</td>
+            <td>2025-11-21 07:35</td>
+            <td>2025-11-21 08:10</td>
+            <td style="font-weight:600">NEAR</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.897</td>
+            <td>1.981</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+13.0%</td>
+            <td class="pnl-pos">+$271.52</td>
+            <td>35m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_normal_d_4_65 ( 2 141 )">exit_long_normal_d_4_65 ( 2 141 )</td>
+            <td style="font-size:11px">2 141</td>
+          </tr>
+          <tr class="win">
+            <td>131</td>
+            <td>2025-11-21 07:50</td>
+            <td>2025-11-21 08:50</td>
+            <td style="font-weight:600">FIL</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.639</td>
+            <td>1.66</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.57%</td>
+            <td class="pnl-pos">+$74.57</td>
+            <td>1h 0m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_27 ( 142 )">exit_long_tc_d_1_27 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>132</td>
+            <td>2025-12-01 01:00</td>
+            <td>2025-12-01 01:10</td>
+            <td style="font-weight:600">DOT</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.051</td>
+            <td>2.077</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.56%</td>
+            <td class="pnl-pos">+$75.53</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_u_1 ( 143 )">exit_long_tc_u_1 ( 143 )</td>
+            <td style="font-size:11px">143</td>
+          </tr>
+          <tr class="win">
+            <td>133</td>
+            <td>2025-12-01 00:10</td>
+            <td>2025-12-02 06:40</td>
+            <td style="font-weight:600">APT</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.9023</td>
+            <td>1.9126</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+1.39%</td>
+            <td class="pnl-pos">+$29.56</td>
+            <td>1d 6h</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_0_35 ( 141 )">exit_long_tc_d_0_35 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>134</td>
+            <td>2025-12-01 00:55</td>
+            <td>2025-12-02 14:10</td>
+            <td style="font-weight:600">ARB</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.1966</td>
+            <td>0.1973</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+0.9%</td>
+            <td class="pnl-pos">+$19.19</td>
+            <td>1d 13h</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_0_63 ( 143 )">exit_long_tc_d_0_63 ( 143 )</td>
+            <td style="font-size:11px">143</td>
+          </tr>
+          <tr class="win">
+            <td>135</td>
+            <td>2025-12-01 00:40</td>
+            <td>2025-12-02 14:45</td>
+            <td style="font-weight:600">UNI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>5.679</td>
+            <td>5.701</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+0.87%</td>
+            <td class="pnl-pos">+$18.54</td>
+            <td>1d 14h</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_0_35 ( 143 )">exit_long_tc_d_0_35 ( 143 )</td>
+            <td style="font-size:11px">143</td>
+          </tr>
+          <tr class="win">
+            <td>136</td>
+            <td>2025-12-15 15:45</td>
+            <td>2025-12-16 16:25</td>
+            <td style="font-weight:600">ARB</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.2001</td>
+            <td>0.2024</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.21%</td>
+            <td class="pnl-pos">+$68.74</td>
+            <td>1d 0h</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_scalp_d_1_35 ( 163 )">exit_long_scalp_d_1_35 ( 163 )</td>
+            <td style="font-size:11px">163</td>
+          </tr>
+          <tr class="win">
+            <td>137</td>
+            <td>2025-12-18 17:25</td>
+            <td>2025-12-18 17:35</td>
+            <td style="font-weight:600">ARB</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.1766</td>
+            <td>0.179</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.83%</td>
+            <td class="pnl-pos">+$82.38</td>
+            <td>10m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_u_1 ( 141 )">exit_long_tc_u_1 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>138</td>
+            <td>2025-11-05 01:20</td>
+            <td>2026-01-04 05:55</td>
+            <td style="font-weight:600">INJ</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>4.701</td>
+            <td>5.041</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+5.98%</td>
+            <td class="pnl-pos">+$600.07</td>
+            <td>60d 4h</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_grind_g ( 120 )">exit_long_grind_g ( 120 )</td>
+            <td style="font-size:11px">120</td>
+          </tr>
+          <tr class="win">
+            <td>139</td>
+            <td>2026-01-06 18:00</td>
+            <td>2026-01-06 18:25</td>
+            <td style="font-weight:600">RENDER</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>2.294</td>
+            <td>2.343</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+6.16%</td>
+            <td class="pnl-pos">+$133.52</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_2_120 ( 142 )">exit_long_tc_d_2_120 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>140</td>
+            <td>2026-01-31 14:40</td>
+            <td>2026-01-31 14:55</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.1525</td>
+            <td>1.1662</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.32%</td>
+            <td class="pnl-pos">+$72.65</td>
+            <td>15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_u_1 ( 141 )">exit_long_tc_u_1 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>141</td>
+            <td>2026-01-31 14:40</td>
+            <td>2026-01-31 15:05</td>
+            <td style="font-weight:600">ARB</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.1398</td>
+            <td>0.1417</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.83%</td>
+            <td class="pnl-pos">+$83.82</td>
+            <td>25m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_27 ( 141 )">exit_long_tc_d_1_27 ( 141 )</td>
+            <td style="font-size:11px">141</td>
+          </tr>
+          <tr class="win">
+            <td>142</td>
+            <td>2026-01-31 17:35</td>
+            <td>2026-01-31 18:10</td>
+            <td style="font-weight:600">NEAR</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.164</td>
+            <td>1.178</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.37%</td>
+            <td class="pnl-pos">+$74.00</td>
+            <td>35m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_65 ( 141 142 )">exit_long_tc_d_1_65 ( 141 142 )</td>
+            <td style="font-size:11px">141 142</td>
+          </tr>
+          <tr class="win">
+            <td>143</td>
+            <td>2026-02-05 12:25</td>
+            <td>2026-02-05 12:30</td>
+            <td style="font-weight:600">HYPE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>31.412</td>
+            <td>31.767</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.15%</td>
+            <td class="pnl-pos">+$68.71</td>
+            <td>5m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_u_1 ( 143 )">exit_long_tc_u_1 ( 143 )</td>
+            <td style="font-size:11px">143</td>
+          </tr>
+          <tr class="win">
+            <td>144</td>
+            <td>2026-02-05 15:25</td>
+            <td>2026-02-05 16:25</td>
+            <td style="font-weight:600">SUI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.9517</td>
+            <td>0.9778</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+7.98%</td>
+            <td class="pnl-pos">+$174.60</td>
+            <td>1h 0m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_w_2_11 ( 142 )">exit_long_tc_w_2_11 ( 142 )</td>
+            <td style="font-size:11px">142</td>
+          </tr>
+          <tr class="win">
+            <td>145</td>
+            <td>2026-02-06 00:20</td>
+            <td>2026-02-06 00:35</td>
+            <td style="font-weight:600">HYPE</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>31.626</td>
+            <td>33.11</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+13.83%</td>
+            <td class="pnl-pos">+$302.97</td>
+            <td>15m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_4_107 ( 141 142 )">exit_long_tc_d_4_107 ( 141 142 )</td>
+            <td style="font-size:11px">141 142</td>
+          </tr>
+          <tr class="win">
+            <td>146</td>
+            <td>2026-02-05 17:55</td>
+            <td>2026-02-06 00:55</td>
+            <td style="font-weight:600">UNI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.142</td>
+            <td>3.187</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+4.05%</td>
+            <td class="pnl-pos">+$89.10</td>
+            <td>7h 0m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_rebuy_d_1_44 ( 62 )">exit_long_rebuy_d_1_44 ( 62 )</td>
+            <td style="font-size:11px">62</td>
+          </tr>
+          <tr class="win">
+            <td>147</td>
+            <td>2026-02-11 18:35</td>
+            <td>2026-02-11 21:25</td>
+            <td style="font-weight:600">UNI</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>3.496</td>
+            <td>3.54</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+3.53%</td>
+            <td class="pnl-pos">+$78.01</td>
+            <td>2h 50m</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_tc_d_1_119 ( 145 )">exit_long_tc_d_1_119 ( 145 )</td>
+            <td style="font-size:11px">145</td>
+          </tr>
+          <tr class="win">
+            <td>148</td>
+            <td>2026-01-11 21:05</td>
+            <td>2026-02-14 19:35</td>
+            <td style="font-weight:600">RENDER</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>1.279</td>
+            <td>1.533</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+7.29%</td>
+            <td class="pnl-pos">+$679.70</td>
+            <td>33d 22h</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="exit_long_grind_g ( 120 )">exit_long_grind_g ( 120 )</td>
+            <td style="font-size:11px">120</td>
+          </tr>
+          <tr class="win">
+            <td>149</td>
+            <td>2026-02-26 16:55</td>
+            <td>2026-03-01 11:45</td>
+            <td style="font-weight:600">OP</td>
+            <td><span class="tag tag-long">LONG</span></td>
+            <td>0.1129</td>
+            <td>0.1228</td>
+            <td>3.0x</td>
+            <td class="pnl-pos">+7.28%</td>
+            <td class="pnl-pos">+$148.08</td>
+            <td>2d 18h</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="force_exit">force_exit</td>
+            <td style="font-size:11px">120</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- RISK METRICS -->
+<!-- ============================================================ -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><span>#</span> Risk Metrics</h2>
+    <div class="risk-grid">
+      <div class="risk-card">
+        <div class="risk-card-label">Sharpe Ratio</div>
+        <div class="risk-card-value" style="color:var(--gold)">3.12</div>
+        <div class="risk-card-detail">Annualised (365d)</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-card-label">Sortino Ratio</div>
+        <div class="risk-card-value" style="color:var(--gold)">Inf (no losses)</div>
+        <div class="risk-card-detail">Downside deviation</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-card-label">Max Drawdown</div>
+        <div class="risk-card-value" style="color:var(--red)">0.00%</div>
+        <div class="risk-card-detail">$0.00 from peak</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-card-label">Calmar Ratio</div>
+        <div class="risk-card-value" style="color:var(--gold)">Inf</div>
+        <div class="risk-card-detail">Annualised return / Max DD</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-card-label">Profit Factor</div>
+        <div class="risk-card-value" style="color:var(--green)">Inf (no losses)</div>
+        <div class="risk-card-detail">Gross profit / Gross loss</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-card-label">Max Consecutive Wins</div>
+        <div class="risk-card-value" style="color:var(--green)">149</div>
+        <div class="risk-card-detail">Streak</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-card-label">Best Day</div>
+        <div class="risk-card-value" style="color:var(--green)">+$4,882.39</div>
+        <div class="risk-card-detail">2025-10-10</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-card-label">Worst Day</div>
+        <div class="risk-card-value" style="color:var(--green)">+$10.09</div>
+        <div class="risk-card-detail">2025-02-08</div>
+      </div>
+    </div>
+    <div class="chart-container">
+      <canvas id="drawdownChart" height="80"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- FOOTER -->
+<!-- ============================================================ -->
+<footer class="footer">
+  <div class="container">
+    <p><strong>Disclaimer:</strong> This report is generated from historical backtest data and does not guarantee future results. Past performance is not indicative of future performance. Trading cryptocurrencies with leverage carries substantial risk of loss. This is not financial advice.</p>
+    <p style="margin-top:12px">Generated on 2026-03-25 15:08:00 &middot; Strategy: NostalgiaForInfinity X7 &middot; Exchange: Binance Futures (Backtest) &middot; Data: 149 trades</p>
+    <p style="margin-top:6px;color:var(--text-muted)">Powered by Freqtrade &middot; Report by Trend Sniper</p>
+  </div>
+</footer>
+
+<!-- ============================================================ -->
+<!-- CHART.JS SCRIPTS -->
+<!-- ============================================================ -->
+<script>
+// ---- Shared config ----
+Chart.defaults.color = '#8a8a9a';
+Chart.defaults.borderColor = 'rgba(30,30,46,0.6)';
+Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+const equityLabels = ["Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 21 '25", "Feb 02 '25", "Feb 02 '25", "Feb 02 '25", "Feb 02 '25", "Feb 02 '25", "Feb 02 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 04 '25", "Feb 04 '25", "Feb 04 '25", "Feb 04 '25", "Feb 04 '25", "Feb 06 '25", "Feb 08 '25", "Feb 12 '25", "Feb 12 '25", "Feb 12 '25", "Feb 24 '25", "Feb 28 '25", "Mar 02 '25", "Mar 03 '25", "Mar 03 '25", "Mar 03 '25", "Mar 03 '25", "Mar 04 '25", "Mar 04 '25", "Mar 07 '25", "Mar 07 '25", "Mar 07 '25", "Mar 07 '25", "Mar 10 '25", "Mar 10 '25", "Mar 10 '25", "Mar 10 '25", "Mar 10 '25", "Mar 11 '25", "Mar 11 '25", "Mar 11 '25", "Mar 19 '25", "Apr 06 '25", "Apr 07 '25", "Apr 07 '25", "Apr 07 '25", "May 12 '25", "May 23 '25", "May 30 '25", "Jun 13 '25", "Jun 13 '25", "Jun 13 '25", "Jun 13 '25", "Jun 18 '25", "Jun 30 '25", "Jul 24 '25", "Jul 24 '25", "Aug 14 '25", "Aug 14 '25", "Aug 14 '25", "Aug 14 '25", "Aug 14 '25", "Aug 14 '25", "Sep 22 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 11 '25", "Oct 17 '25", "Oct 29 '25", "Oct 29 '25", "Oct 29 '25", "Oct 29 '25", "Nov 02 '25", "Nov 03 '25", "Nov 03 '25", "Nov 03 '25", "Nov 03 '25", "Nov 03 '25", "Nov 04 '25", "Nov 04 '25", "Nov 05 '25", "Nov 07 '25", "Nov 08 '25", "Nov 08 '25", "Nov 12 '25", "Nov 17 '25", "Nov 21 '25", "Nov 21 '25", "Nov 21 '25", "Dec 01 '25", "Dec 02 '25", "Dec 02 '25", "Dec 02 '25", "Dec 16 '25", "Dec 18 '25", "Jan 04 '26", "Jan 06 '26", "Jan 31 '26", "Jan 31 '26", "Jan 31 '26", "Feb 05 '26", "Feb 05 '26", "Feb 06 '26", "Feb 06 '26", "Feb 11 '26", "Feb 14 '26", "Mar 01 '26"];
+const equityValues = [10040.83, 10119.11, 10182.31, 10237.83, 10288.31, 10338.61, 10387.2, 10427.18, 10478.06, 10520.74, 10570.69, 10627.81, 10760.6, 10870.27, 10983.43, 11029.41, 11095.81, 11152.13, 11237.71, 11352.41, 11362.7, 11399.53, 11428.77, 11540.9, 11632.96, 11719.34, 11817.92, 11882.53, 11926.97, 12030.77, 12153.69, 12218.79, 12261.94, 12301.16, 12360.56, 12403.82, 12463.26, 12523.93, 12560.31, 12728.62, 12760.44, 12788.85, 12822.29, 12854.82, 12912.34, 12952.58, 12962.67, 13056.25, 13140.32, 13256.97, 13340.64, 13361.61, 13488.82, 13555.14, 13666.76, 13733.77, 13762.53, 13940.49, 14041.57, 14111.84, 14189.1, 14226.52, 14340.4, 14402.7, 14426.7, 14450.3, 14506.17, 14587.72, 14629.09, 14669.87, 14750.09, 15060.07, 15081.87, 15126.92, 15228.52, 15276.08, 15512.93, 15561.1, 15645.82, 15693.0, 15743.69, 15803.86, 15854.66, 15890.59, 15952.15, 16084.06, 16282.25, 16336.11, 16382.67, 16431.45, 16489.81, 16551.14, 16705.23, 16774.96, 17511.48, 18630.98, 19013.19, 19343.77, 19892.44, 20932.41, 21042.86, 21146.43, 21281.83, 21374.24, 21439.4, 21556.61, 21611.06, 21657.35, 21864.48, 22013.55, 22264.76, 22502.83, 22747.14, 23018.55, 23408.06, 23496.02, 23512.68, 23599.46, 23722.45, 23794.24, 23931.82, 23945.24, 24113.47, 24262.08, 24537.04, 24761.01, 24831.34, 24904.06, 25009.76, 25281.28, 25355.85, 25431.38, 25460.94, 25480.13, 25498.67, 25567.41, 25649.79, 26249.86, 26383.38, 26456.03, 26539.85, 26613.85, 26682.56, 26857.16, 27160.13, 27249.23, 27327.24, 28006.94, 28155.02];
+const monthlyLabels = ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03"];
+const monthlyPnl = [1399.53, 1962.09, 1698.46, 216.01, 369.74, 306.33, 330.1, 422.98, 69.73, 6243.58, 2337.3, 293.94, 964.07, 1393.08, 148.08];
+const monthlyPnlPct = [14.0, 17.21, 12.71, 1.43, 2.42, 1.96, 2.07, 2.6, 0.42, 37.22, 10.15, 1.16, 3.76, 5.23, 0.53];
+const coinLabels = ["ADA", "RENDER", "FIL", "APT", "SUI", "DOGE", "INJ", "SOL", "HYPE", "NEAR", "AVAX", "OP", "BNB", "DOT", "XRP", "UNI", "ARB", "ETH", "LINK"];
+const coinPnl = [2253.12, 1831.04, 1738.84, 1481.34, 1357.28, 1327.65, 1278.08, 1203.22, 911.04, 777.7, 586.71, 493.48, 484.16, 450.16, 433.16, 409.6, 405.62, 376.83, 355.97];
+const profitHistLabels = ["0.7-5.9", "5.9-11.2", "11.2-16.5", "16.5-21.7", "21.7-27.0", "27.0-32.3", "32.3-37.5", "37.5-42.8", "42.8-48.0", "48.0-53.3", "53.3-58.6", "58.6-63.8", "63.8-69.1", "69.1-74.3", "74.3-79.6"];
+const profitHistCounts = [73, 46, 23, 2, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1];
+const durationHistLabels = ["0.1-339.2", "339.2-678.3", "678.3-1017.5", "1017.5-1356.6", "1356.6-1695.7", "1695.7-2034.8", "2034.8-2374.0", "2374.0-2713.1", "2713.1-3052.2", "3052.2-3391.4", "3391.4-3730.5", "3730.5-4069.6", "4069.6-4408.7", "4408.7-4747.9", "4747.9-5087.0"];
+const durationHistCounts = [145, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+const drawdownLabels = ["Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 19 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 20 '25", "Jan 21 '25", "Feb 02 '25", "Feb 02 '25", "Feb 02 '25", "Feb 02 '25", "Feb 02 '25", "Feb 02 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 03 '25", "Feb 04 '25", "Feb 04 '25", "Feb 04 '25", "Feb 04 '25", "Feb 04 '25", "Feb 06 '25", "Feb 08 '25", "Feb 12 '25", "Feb 12 '25", "Feb 12 '25", "Feb 24 '25", "Feb 28 '25", "Mar 02 '25", "Mar 03 '25", "Mar 03 '25", "Mar 03 '25", "Mar 03 '25", "Mar 04 '25", "Mar 04 '25", "Mar 07 '25", "Mar 07 '25", "Mar 07 '25", "Mar 07 '25", "Mar 10 '25", "Mar 10 '25", "Mar 10 '25", "Mar 10 '25", "Mar 10 '25", "Mar 11 '25", "Mar 11 '25", "Mar 11 '25", "Mar 19 '25", "Apr 06 '25", "Apr 07 '25", "Apr 07 '25", "Apr 07 '25", "May 12 '25", "May 23 '25", "May 30 '25", "Jun 13 '25", "Jun 13 '25", "Jun 13 '25", "Jun 13 '25", "Jun 18 '25", "Jun 30 '25", "Jul 24 '25", "Jul 24 '25", "Aug 14 '25", "Aug 14 '25", "Aug 14 '25", "Aug 14 '25", "Aug 14 '25", "Aug 14 '25", "Sep 22 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 10 '25", "Oct 11 '25", "Oct 17 '25", "Oct 29 '25", "Oct 29 '25", "Oct 29 '25", "Oct 29 '25", "Nov 02 '25", "Nov 03 '25", "Nov 03 '25", "Nov 03 '25", "Nov 03 '25", "Nov 03 '25", "Nov 04 '25", "Nov 04 '25", "Nov 05 '25", "Nov 07 '25", "Nov 08 '25", "Nov 08 '25", "Nov 12 '25", "Nov 17 '25", "Nov 21 '25", "Nov 21 '25", "Nov 21 '25", "Dec 01 '25", "Dec 02 '25", "Dec 02 '25", "Dec 02 '25", "Dec 16 '25", "Dec 18 '25", "Jan 04 '26", "Jan 06 '26", "Jan 31 '26", "Jan 31 '26", "Jan 31 '26", "Feb 05 '26", "Feb 05 '26", "Feb 06 '26", "Feb 06 '26", "Feb 11 '26", "Feb 14 '26", "Mar 01 '26"];
+const drawdownValues = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+
+// ---- 1. EQUITY CURVE ----
+(function() {
+  const ctx = document.getElementById('equityChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+  gradient.addColorStop(0, 'rgba(0,230,118,0.25)');
+  gradient.addColorStop(1, 'rgba(0,230,118,0.0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: equityLabels,
+      datasets: [{
+        label: 'Balance (USDT)',
+        data: equityValues,
+        borderColor: '#00e676',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.3,
+        borderWidth: 2.5,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: '#00e676',
+        pointHoverBorderColor: '#fff',
+        pointHoverBorderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(18,18,26,0.95)',
+          titleColor: '#e0e0e0',
+          bodyColor: '#00e676',
+          borderColor: '#1e1e2e',
+          borderWidth: 1,
+          padding: 12,
+          displayColors: false,
+          callbacks: {
+            label: function(ctx) { return '$' + ctx.parsed.y.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}); }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { maxTicksLimit: 15, maxRotation: 45 },
+          grid: { display: false }
+        },
+        y: {
+          ticks: {
+            callback: function(v) { return '$' + v.toLocaleString(); }
+          },
+          grid: { color: 'rgba(30,30,46,0.4)' }
+        }
+      }
+    }
+  });
+})();
+
+// ---- 2. MONTHLY BAR CHART ----
+(function() {
+  const ctx = document.getElementById('monthlyChart').getContext('2d');
+  const colors = monthlyPnl.map(v => v >= 0 ? '#00e676' : '#ff1744');
+  const bgColors = monthlyPnl.map(v => v >= 0 ? 'rgba(0,230,118,0.7)' : 'rgba(255,23,68,0.7)');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: monthlyLabels,
+      datasets: [{
+        label: 'Monthly P&L ($)',
+        data: monthlyPnl,
+        backgroundColor: bgColors,
+        borderColor: colors,
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(18,18,26,0.95)',
+          titleColor: '#e0e0e0',
+          borderColor: '#1e1e2e',
+          borderWidth: 1,
+          padding: 12,
+          callbacks: {
+            label: function(ctx) {
+              const pnl = ctx.parsed.y;
+              const pct = monthlyPnlPct[ctx.dataIndex];
+              const sign = pnl >= 0 ? '+' : '';
+              return sign + '$' + pnl.toLocaleString(undefined, {minimumFractionDigits:2}) + ' (' + sign + pct + '%)';
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: {
+          ticks: { callback: function(v) { return '$' + v.toLocaleString(); } },
+          grid: { color: 'rgba(30,30,46,0.4)' }
+        }
+      }
+    }
+  });
+})();
+
+// ---- 3. COIN HORIZONTAL BAR ----
+(function() {
+  const ctx = document.getElementById('coinChart').getContext('2d');
+  const colors = coinPnl.map(v => v >= 0 ? 'rgba(0,230,118,0.75)' : 'rgba(255,23,68,0.75)');
+  const borderColors = coinPnl.map(v => v >= 0 ? '#00e676' : '#ff1744');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: coinLabels,
+      datasets: [{
+        label: 'Profit (USDT)',
+        data: coinPnl,
+        backgroundColor: colors,
+        borderColor: borderColors,
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(18,18,26,0.95)',
+          callbacks: {
+            label: function(ctx) { return '+$' + ctx.parsed.x.toLocaleString(undefined, {minimumFractionDigits:2}); }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { callback: function(v) { return '$' + v.toLocaleString(); } },
+          grid: { color: 'rgba(30,30,46,0.4)' }
+        },
+        y: { grid: { display: false } }
+      }
+    }
+  });
+})();
+
+// ---- 4. PROFIT DISTRIBUTION ----
+(function() {
+  const ctx = document.getElementById('profitDistChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: profitHistLabels,
+      datasets: [{
+        label: 'Trade Count',
+        data: profitHistCounts,
+        backgroundColor: 'rgba(124,77,255,0.6)',
+        borderColor: '#7c4dff',
+        borderWidth: 1,
+        borderRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: { display: true, text: 'Profit Distribution (%)', color: '#e0e0e0', font: { size: 14, weight: '600' } },
+        legend: { display: false },
+      },
+      scales: {
+        x: { ticks: { maxRotation: 45, font: { size: 10 } }, grid: { display: false } },
+        y: { grid: { color: 'rgba(30,30,46,0.4)' }, ticks: { stepSize: 1 } }
+      }
+    }
+  });
+})();
+
+// ---- 5. DURATION DISTRIBUTION ----
+(function() {
+  const ctx = document.getElementById('durationDistChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: durationHistLabels,
+      datasets: [{
+        label: 'Trade Count',
+        data: durationHistCounts,
+        backgroundColor: 'rgba(255,215,64,0.6)',
+        borderColor: '#ffd740',
+        borderWidth: 1,
+        borderRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: { display: true, text: 'Duration Distribution (hours)', color: '#e0e0e0', font: { size: 14, weight: '600' } },
+        legend: { display: false },
+      },
+      scales: {
+        x: { ticks: { maxRotation: 45, font: { size: 10 } }, grid: { display: false } },
+        y: { grid: { color: 'rgba(30,30,46,0.4)' }, ticks: { stepSize: 1 } }
+      }
+    }
+  });
+})();
+
+// ---- 6. DRAWDOWN (UNDERWATER) CHART ----
+(function() {
+  const ctx = document.getElementById('drawdownChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+  gradient.addColorStop(0, 'rgba(255,23,68,0.0)');
+  gradient.addColorStop(1, 'rgba(255,23,68,0.3)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: drawdownLabels,
+      datasets: [{
+        label: 'Drawdown %',
+        data: drawdownValues.map(v => -v),
+        borderColor: '#ff1744',
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.3,
+        borderWidth: 2,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: '#ff1744',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: { display: true, text: 'Underwater Chart (Drawdown from Peak)', color: '#e0e0e0', font: { size: 14, weight: '600' } },
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(18,18,26,0.95)',
+          callbacks: {
+            label: function(ctx) { return ctx.parsed.y.toFixed(2) + '%'; }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { maxTicksLimit: 15, maxRotation: 45 }, grid: { display: false } },
+        y: {
+          ticks: { callback: function(v) { return v.toFixed(1) + '%'; } },
+          grid: { color: 'rgba(30,30,46,0.4)' }
+        }
+      }
+    }
+  });
+})();
+
+// ---- TABLE SORT ----
+let sortDir = {};
+function sortTable(colIndex, type) {
+  const table = document.getElementById('tradeLogTable');
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const dir = sortDir[colIndex] === 'asc' ? 'desc' : 'asc';
+  sortDir[colIndex] = dir;
+
+  rows.sort((a, b) => {
+    let aVal = a.cells[colIndex].textContent.trim();
+    let bVal = b.cells[colIndex].textContent.trim();
+    if (type === 'num') {
+      aVal = parseFloat(aVal.replace(/[^\d.\-]/g, '')) || 0;
+      bVal = parseFloat(bVal.replace(/[^\d.\-]/g, '')) || 0;
+    }
+    if (aVal < bVal) return dir === 'asc' ? -1 : 1;
+    if (aVal > bVal) return dir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  rows.forEach(r => tbody.appendChild(r));
+}
+</script>
+
+</body>
+</html>
