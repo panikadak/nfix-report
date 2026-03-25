@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strateji Nasil Calisiyor?</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;line-height:1.8}
+.container{max-width:900px;margin:0 auto;padding:30px 20px}
+a{color:#00ccff;text-decoration:none}
+a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:30px;font-size:14px;color:#888}
+.back:hover{color:#00ccff}
+h1{font-size:36px;color:#00ff88;margin-bottom:10px;letter-spacing:-0.5px}
+.subtitle{color:#888;font-size:16px;margin-bottom:50px;border-bottom:1px solid #1a1a2e;padding-bottom:20px}
+h2{font-size:22px;color:#00ccff;margin:50px 0 20px;padding-bottom:10px;border-bottom:1px solid #1a1a2e}
+h3{font-size:17px;color:#fff;margin:25px 0 12px}
+p{margin-bottom:16px;color:#ccc;font-size:15px}
+.highlight{background:#12121f;border-left:3px solid #00ff88;padding:20px;border-radius:0 8px 8px 0;margin:20px 0}
+.highlight p{margin-bottom:8px}
+.highlight strong{color:#00ff88}
+.warning{background:#1a1015;border-left:3px solid #ff4466;padding:20px;border-radius:0 8px 8px 0;margin:20px 0}
+.warning strong{color:#ff4466}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;margin:20px 0}
+.card{background:#12121f;border:1px solid #1a1a2e;border-radius:10px;padding:18px}
+.card .icon{font-size:24px;margin-bottom:8px}
+.card .title{color:#00ccff;font-size:14px;font-weight:600;margin-bottom:6px}
+.card p{font-size:13px;color:#aaa;margin:0}
+.flow{background:#12121f;border-radius:10px;padding:25px;margin:20px 0;font-family:'Courier New',monospace;font-size:13px;color:#00ff88;line-height:2}
+ul{margin:10px 0 16px 20px}
+li{margin-bottom:8px;color:#ccc;font-size:15px}
+li strong{color:#fff}
+.tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;margin:2px}
+.tag-green{background:rgba(0,255,136,0.12);color:#00ff88}
+.tag-blue{background:rgba(0,204,255,0.12);color:#00ccff}
+.tag-orange{background:rgba(255,165,0,0.12);color:orange}
+.tag-red{background:rgba(255,68,102,0.12);color:#ff4466}
+.tag-purple{background:rgba(180,100,255,0.12);color:#b464ff}
+.divider{height:1px;background:linear-gradient(90deg,transparent,#1a1a2e,transparent);margin:40px 0}
+.footer{text-align:center;color:#444;font-size:12px;margin-top:60px;padding-top:20px;border-top:1px solid #1a1a2e}
+</style>
+</head>
+<body>
+<div class="container">
+
+<a href="index.html" class="back">&larr; Rapora geri don</a>
+
+<h1>Bu Algoritma Nasil Calisiyor?</h1>
+<p class="subtitle">Kripto futures piyasasinda otomatik islem yapan bir trading botunun icini aciyoruz.</p>
+
+<!-- ======================== SECTION 1 ======================== -->
+<h2>Buyuk Resim</h2>
+
+<p>Bu bot, kripto borsasinda <strong>ayni anda 20 farkli coin'i</strong> izleyen, firsati goruldugunde otomatik olarak islem acan ve yoneten bir sistemdir. Insan mudalahesi gerektirmez — 7/24 calisir.</p>
+
+<div class="flow">
+Piyasa Verisi (her 5 dakikada bir guncellenir)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;v<br>
+5 Farkli Zaman Diliminde Indikatir Hesaplama<br>
+(5dk, 15dk, 1 saat, 4 saat, gunluk)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;v<br>
+160+ Giris Kosulunu Tara<br>
+&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;v<br>
+Koruma Filtreleri (sahte sinyal mi? pump mi? BTC dusuyor mu?)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;v<br>
+Kosullar uygun ise &rarr; ISLEM AC<br>
+&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;v<br>
+Pozisyon Yonetimi (grind, DCA, partial exit)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;v<br>
+Kar hedefine ulasinca &rarr; KAPAT
+</div>
+
+<!-- ======================== SECTION 2 ======================== -->
+<h2>Multi-Timeframe Analiz</h2>
+
+<p>Bot her coin icin <strong>5 farkli zaman diliminde</strong> analiz yapar. Bu, hem buyuk trendi gormesini hem de kucuk firsatlari yakalamasini saglar.</p>
+
+<div class="grid">
+<div class="card">
+    <div class="icon">5dk</div>
+    <div class="title">Scalp Seviyesi</div>
+    <p>Giris ve cikis zamanlama. Ani fiyat hareketlerini yakalar.</p>
+</div>
+<div class="card">
+    <div class="icon">15dk</div>
+    <div class="title">Kisa Vadeli Trend</div>
+    <p>Son birknac saatin momentumunu degerlndiriir.</p>
+</div>
+<div class="card">
+    <div class="icon">1 Saat</div>
+    <div class="title">Orta Vadeli Yapi</div>
+    <p>Destek/direnc seviyeleri, orta vadeli trend yonu.</p>
+</div>
+<div class="card">
+    <div class="icon">4 Saat</div>
+    <div class="title">Swing Trendi</div>
+    <p>Buyuk yonlu hareketler. Trendin sagligi.</p>
+</div>
+<div class="card">
+    <div class="icon">Gunluk</div>
+    <div class="title">Makro Yun</div>
+    <p>Buyuk resim. Major destek/direnc. Piyasa rejimi.</p>
+</div>
+</div>
+
+<div class="highlight">
+<p><strong>Kritik detay: BTC filtresi.</strong></p>
+<p>Bot sadece islem yapacagi coin'i degil, ayni anda Bitcoin'i de izler. BTC sert dusuyorsa, ne kadar iyi sinyal olursa olsun hicbir altcoin'de long pozisyon acmaz. Cunku kripto piyasasinda BTC dustugunde her sey duser.</p>
+</div>
+
+<!-- ======================== SECTION 3 ======================== -->
+<h2>160+ Giris Kosulu</h2>
+
+<p>Bot <strong>tek bir formule</strong> bagli degildir. 160'tan fazla farkli giris kosulu tanimlanmistir. Her biri farkli bir piyasa durumuna optimize edilmistir. Bu kosullar 5 moda ayrilir:</p>
+
+<div class="grid">
+<div class="card">
+    <span class="tag tag-green">Normal Mod</span>
+    <div class="title" style="margin-top:10px">Standart Piyasa</div>
+    <p>RSI asiri satim + Bollinger Band alt bant + EMA teyidi. En muhafazakar, en cok koruma filtresi olan mod.</p>
+</div>
+<div class="card">
+    <span class="tag tag-orange">Pump Mod</span>
+    <div class="title" style="margin-top:10px">Momentum Takibi</div>
+    <p>Guclu yukselis trendinde erken giris. Mevcut momentum'a binmeye calisir.</p>
+</div>
+<div class="card">
+    <span class="tag tag-blue">Quick Mod</span>
+    <div class="title" style="margin-top:10px">Hizli Scalp</div>
+    <p>Cok kisa vadeli firsatlar. Hizli gir, hizli cik. Kucuk ama hizli karlar.</p>
+</div>
+<div class="card">
+    <span class="tag tag-purple">Rebuy Mod</span>
+    <div class="title" style="margin-top:10px">Ek Alim (DCA)</div>
+    <p>Fiyat duserse mevcut pozisyona ek alim yapar. Ortalama maliyeti dusurur.</p>
+</div>
+<div class="card">
+    <span class="tag tag-red">Long Mod</span>
+    <div class="title" style="margin-top:10px">Uzun Vadeli</div>
+    <p>Swing tarzi girisler. Daha uzun tutma suresi, daha buyuk kar hedefi.</p>
+</div>
+</div>
+
+<p>Her giris kosulu iki katmandan olusur:</p>
+<ul>
+<li><strong>Koruma Katmani:</strong> EMA kontrolleri, SMA 200 filtresi, "guvenli dip" kontrolu (normal bir geri cekilme mi yoksa cokus mu?), "pump tespiti" (yapay bir yukselis mi?)</li>
+<li><strong>Sinyal Katmani:</strong> Gercek tetikleyici — RSI + Bollinger Band + hacim + momentum kombinasyonu</li>
+</ul>
+
+<p>Bir islem acilmasi icin <strong>koruma katmaninin TAMAMEN</strong> gecilmesi ve <strong>sinyal katmaninin tetiklenmesi</strong> gerekir. Bu, sahte sinyallerin buyuk cogunlugunu filtreler.</p>
+
+<!-- ======================== SECTION 4 ======================== -->
+<h2>Kullanilan Indikatorler</h2>
+
+<p>Yaklasik 26 farkli indiknator parametresi kullanilir. Bunlari kategoriye ayirabiliriz:</p>
+
+<h3>Trend Indikaterleri</h3>
+<ul>
+<li><strong>EMA (8, 12, 16, 21, 26, 50, 100, 200):</strong> Farkli periyotlarda ustel hareketli ortalama. Kisa EMA'lar hizli tepki verir, uzunlar buyuk trendi gosterir.</li>
+<li><strong>SMA 200:</strong> 200 periyotluk basit ortalama. Bunun ustu = bullish, alti = bearish.</li>
+<li><strong>Heikin Ashi mumlari:</strong> Duzlestirilerek trend yonunu daha net gosterir.</li>
+</ul>
+
+<h3>Momentum Indiketerleri</h3>
+<ul>
+<li><strong>RSI:</strong> 0-100 arasi. 30 alti = asiri satim (alim firsati), 70 ustu = asiri alim.</li>
+<li><strong>Stochastic RSI:</strong> RSI'in daha hizli versiyonu. Scalp icin ideal.</li>
+<li><strong>MACD:</strong> Momentum degisimini yakalar. Histogram yonu onemli.</li>
+<li><strong>Williams %R:</strong> Asiri alim/satim tespiti. RSI'a benzer ama farkli hesaplama.</li>
+<li><strong>CCI:</strong> Dongusal momentum. Fiyatin ortalamadan ne kadar saptigini olcer.</li>
+</ul>
+
+<h3>Volatilite Indikstorleri</h3>
+<ul>
+<li><strong>Bollinger Bands:</strong> Fiyat kanali. Alt banda dokunma = potansiyel alim, ust bant = potansiyel satim.</li>
+<li><strong>ATR:</strong> Ortalama gercek aralik. Volatiliteyi olcer, stop loss hesabinda kullanilir.</li>
+</ul>
+
+<h3>Hacim Indikatorleri</h3>
+<ul>
+<li><strong>VWAP:</strong> Hacim agirlikli ortalama fiyat. Kurumsal yatirimcilarin referans noktasi.</li>
+<li><strong>CMF (Chaikin Money Flow):</strong> Para akisinin yonunu gosterir.</li>
+<li><strong>MFI:</strong> Hacim bazli RSI. Alim/satim baskisini olcer.</li>
+</ul>
+
+<!-- ======================== SECTION 5 ======================== -->
+<h2>Akilli Pozisyon Yonetimi</h2>
+
+<p>Bu stratejinin en onemli farki <strong>geleneksel stop loss kullanmamasi</strong>dir. Bunun yerine cok daha sofistike bir sistem vardir:</p>
+
+<h3>Grind Sistemi</h3>
+<div class="highlight">
+<p><strong>Grind = "ogut, pisir, ye"</strong></p>
+<p>Zarar eden bir pozisyon varsa, bot onu hemen kapatmaz. Bunun yerine:</p>
+<p>1. Fiyat dustukce kucuk miktarlarda ek alim yapar (DCA)</p>
+<p>2. Ortalama maliyet duser</p>
+<p>3. Fiyat biraz yukarı dondugunde, parcalar halinde kar realizasyonu yapar (~%1.5-2 kar ile)</p>
+<p>4. Bu islemi tekrarlayarak pozisyonu "ogutur"</p>
+</div>
+
+<h3>Derisking (Risk Azaltma)</h3>
+<p>Eger zarar buyurse, bot pozisyonu kademeli olarak kucultmeye baslar. %100 kapamak yerine, %10-20'lik parcalar halinde azaltir. Bu, hem zarari sinirlar hem de toparlanma sansini korur.</p>
+
+<h3>Partial Exit (Kismi Cikis)</h3>
+<p>Kar edince tum pozisyonu kapatmaz. Ornegen %30'unu kapatip geri kalanin kosmaya devam etmesine izin verir. "Kar cebine at, gerisini birak" mantigi.</p>
+
+<h3>Neden Stop Loss Yok?</h3>
+<p>Geleneksel -%5 veya -%10 stop loss, kripto'nun yuksek volatilitesinde surekli tetiklenir. Fiyat %8 duser, stop tetiklenir, sonra fiyat geri cikar — ama siz artik disardasiniz. Bu strateji bunun yerine <strong>sabirla bekleyip, pozisyonu yoneterek</strong> kara donmeyi tercih eder.</p>
+
+<!-- ======================== SECTION 6 ======================== -->
+<h2>20 Coin Portfoy</h2>
+
+<p>Bot ayni anda 20 buyuk coin'i tarar:</p>
+
+<p style="text-align:center;margin:20px 0">
+<span class="tag tag-green">BTC</span>
+<span class="tag tag-green">ETH</span>
+<span class="tag tag-blue">SOL</span>
+<span class="tag tag-blue">BNB</span>
+<span class="tag tag-blue">XRP</span>
+<span class="tag tag-orange">DOGE</span>
+<span class="tag tag-orange">ADA</span>
+<span class="tag tag-orange">AVAX</span>
+<span class="tag tag-purple">LINK</span>
+<span class="tag tag-purple">DOT</span>
+<span class="tag tag-purple">SUI</span>
+<span class="tag tag-purple">OP</span>
+<span class="tag tag-blue">ARB</span>
+<span class="tag tag-blue">NEAR</span>
+<span class="tag tag-orange">FIL</span>
+<span class="tag tag-green">HYPE</span>
+<span class="tag tag-orange">INJ</span>
+<span class="tag tag-purple">APT</span>
+<span class="tag tag-blue">RENDER</span>
+<span class="tag tag-green">UNI</span>
+</p>
+
+<p>Ayni anda <strong>en fazla 6 acik pozisyon</strong> tutabilir. Bu sayede:</p>
+<ul>
+<li>Tek coin'e bagimli degilsin — ETH kotu giderken SOL firsat sunabilir</li>
+<li>Risk 20 varliga dagitilmis</li>
+<li>Her an en iyi firsati olan coin'e girilir</li>
+</ul>
+
+<!-- ======================== SECTION 7 ======================== -->
+<h2>Neden Calisiyor?</h2>
+
+<div class="grid">
+<div class="card">
+    <div class="title">Diversifikasyon</div>
+    <p>20 coin'e yayilmis risk. Hepsi ayni anda dusmez.</p>
+</div>
+<div class="card">
+    <div class="title">Sabir</div>
+    <p>Panik satisi yapmaz. Zarar eden pozisyonu yonetir, kara donusturur.</p>
+</div>
+<div class="card">
+    <div class="title">Koruma Katmanlari</div>
+    <p>160 kosulun her birinde "bu gercekten iyi bir firsat mi?" kontrolu var.</p>
+</div>
+<div class="card">
+    <div class="title">BTC Filtresi</div>
+    <p>Piyasa geneli dusuyorsa islem yapmaz. En buyuk kayiplari onler.</p>
+</div>
+<div class="card">
+    <div class="title">Multi-Timeframe</div>
+    <p>5dk'lik gurultuyu 4 saatlik trend ile filtreler. Buyuk resmi kaybetmez.</p>
+</div>
+<div class="card">
+    <div class="title">Adaptif</div>
+    <p>5 farkli mod: sakin piyasa, pump, scalp, DCA, swing. Her duruma farkli yaklasim.</p>
+</div>
+</div>
+
+<!-- ======================== SECTION 8 ======================== -->
+<h2>Riskler ve Uyarilar</h2>
+
+<div class="warning">
+<p><strong>Bu sayfa yatirim tavsiyesi degildir.</strong></p>
+<p>Backtest sonuclari gecmis performansi gosterir. Gelecekte ayni sonuclarin tekrarlanacaginin garantisi yoktur.</p>
+</div>
+
+<ul>
+<li><strong>%100 win rate aldatici olabilir:</strong> "Asla zararda satma" stratejisi demek, kaybeden pozisyonlarin haftalarca, hatta aylarca acik kaldigi anlamina gelir. Eger coin tamamen cokerse (Luna/FTX gibi), kurtulus yoktur.</li>
+<li><strong>Kuyruk riski:</strong> 149 islemin 149'u karli olabilir, ama 150. islem tum kari ve sermayeyi silebilir.</li>
+<li><strong>Backtest vs gercek dunya:</strong> Gercek piyasada slippage (kayma), likidite sorunlari ve ani fiyat hareketleri farkli sonuclar dogurabilir.</li>
+<li><strong>Kaldiac (leverage):</strong> 3x kaldiac hem karlari hem zararlari 3 katina cikarir.</li>
+<li><strong>Her zaman sadece kaybetmeyi goze alabildiginiz miktarla islem yapin.</strong></li>
+</ul>
+
+<div class="divider"></div>
+
+<p style="text-align:center;margin:30px 0">
+<a href="index.html" style="background:#00ff88;color:#000;padding:12px 30px;border-radius:8px;font-weight:bold;text-decoration:none">Backtest Raporunu Gor &rarr;</a>
+</p>
+
+<div class="footer">
+<p>Bu icerik egitim amaclıdır. Yatirim tavsiyesi degildir.</p>
+</div>
+
+</div>
+</body>
+</html>
